@@ -1,0 +1,101 @@
+---
+title: "Data exploration"
+subtitle: "From [Lizard guts: Naxos](https://github.com/katekathrynkat/lizard-guts-naxos)"
+output:
+  katereR::t_analysis
+---
+
+**Kate Culhane**, Dept. of Ecology, Evolution, and Marine Biology, UC Santa Barbara  
+[kathrynculhane@ucsb.edu](kathrynculhane@ucsb.edu)
+[<i class="fa fa-github"></i>](https://github.com/katekathrynkat/)
+[<i class="fa fa-twitter"></i>](https://twitter.com/katekathrynkat/)
+
+***
+
+```{r setup, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+knitr::opts_knit$set(root.dir = '..')
+knitr::opts_chunk$set(echo = TRUE, results = 'hold',
+                      warning = FALSE, message = FALSE,
+                      fig.width=5, fig.height=3, rows.print=5)
+```
+
+<div class = "summary">
+
+**Summary**
+
+Exploring the data
+
+</div>
+
+***
+
+#### Dependencies
+
+```{r packages and data, class.source = 'fold-show'}
+
+##### PACKAGES #####
+
+library(tidyverse) # data manipulation & visualization
+library(katereR) # my favorite ggplot themes
+
+##### DATA #####
+
+```
+
+## TO DO
+
+- Finish looking through Colin's papers to make sure you don't duplicate analyses
+
+## Notes from March
+
+Potential analyses:
+
+- Diversity/abundance (prey and diet)
+- Prey selectivity index
+- NMDS
+- Herbivory/myrmecophagy
+- Selection for prey type
+- Prey composition vs. habitat type / vegetation
+- Biomass (using literature data)
+
+To do: 
+
+- Separate ants using comments
+- Finalize output data (except OTU metadata, e.g. hardness/size)
+
+Data exploration (compare by land use category)
+
+- Summarize prey/diet by frequency and incidence of each OTU
+- Summarize abundance and diversity of prey/diet
+- Summarize incidence of herbivory/myrmecophagy
+- Remove rare OTUs
+- NMDS of prey vs. diet
+
+## Prey community
+
+- Richness/evenness
+- NMDS
+
+## Diet
+
+- Prey selectivity?
+  - Check that doesn't overlap with Colin's thesis
+- Herbivory, myrmecophagy
+
+## Context
+
+## Notes & resources
+
+- [Webpage](link), author
+
+<br>
+<br>
+<br>
+
+<details><summary>**Session info**</summary>
+```{r code}
+devtools::session_info()
+```
+</details>
+
