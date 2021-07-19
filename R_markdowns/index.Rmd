@@ -31,12 +31,11 @@ knitr::opts_chunk$set(echo = TRUE, results = 'hold',
 
 ### <i class="fa fa-table fa-fw"></i> Data
 
-- [Metadata]()
-- [Data wrangling]()
+- [Metadata](https://katekathrynkat.github.io/lizard-guts-naxos/01_metadata.html)
 
 ### <i class="fa fa-chart-line fa-fw"></i> Analyses
 
-- [First analysis]()
+- [Data exporation](https://katekathrynkat.github.io/lizard-guts-naxos/03_data_exploration.html)
 
 ### <i class="fa fa-users fa-fw"></i> Collaborators
 

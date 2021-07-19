@@ -9,7 +9,7 @@ navbar:
   - text: "Data"
     href: "01_metadata.html"
     icon: fa-table
-  - text: "Analysis"
+  - text: "Analyses"
     menu:
     - text: "Data exploration"
       href: "03_data_exploration.html"
