@@ -226,14 +226,14 @@ text(ord, display = 'species',
 
 ### Plan of analytical attack
 
-1. PREY COMMUNITY
+1. DOES INVERT COMMUNITY VARY WITH HABITAT?
 
 - NMDS of traps, vectors for veg and land use
 - Multivariate GLMM:
 
 `taxa abundances ~ land use + veg + RANDOM:site`
 
-2. DIET
+2. DOES LIZARD DIET VARY WITH HABITAT?
 
 - NMDS of lizards, vectors for veg and land use
 - Multivariate GLMM:
@@ -245,7 +245,7 @@ Use rel abundance or PA?
 Is it fine to use a trap/lizard as a sample, with site as a RE?  
 Remove rare taxa?
 
-3. PREDICT DIET BY PREY
+3. DOES INVERT COMMUNITY PREDICT LIZARD DIET?
 
 - Multivariate GLMM:
 
@@ -253,13 +253,16 @@ Remove rare taxa?
 
 > Is this even a thing you can do???
 
-### Random ideas
+4. WHAT ABOUT PLANTS AND ANTS?
 
-- Diversity/abundance (prey and diet)
-- Herbivory/myrmecophagy
-- Biomass (using literature data)
-- Prey selectivity indices
+- Something simple about herbivory/myrmecophagy because it's especially weird/interesting
+
+### Other ideas
+
+- Diversity/abundance
+- Invert biomass
 - Invert functional groups (e.g. hardness, activity level)
+- Prey selectivity indices
 
 ### Qs 4 Colin
 
