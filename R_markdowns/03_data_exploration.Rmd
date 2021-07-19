@@ -233,10 +233,6 @@ text(ord, display = 'species',
 
 `taxa abundances ~ land use + veg + RANDOM:site`
 
-> Combine pitfall/sticky?
-> Use rel abundance or PA?
-> Is it fine to use a trap as a sample with site as a RE?
-
 2. DIET
 
 - NMDS of lizards, vectors for veg and land use
@@ -244,12 +240,18 @@ text(ord, display = 'species',
 
 `taxa abundances ~ land use + veg + RANDOM:site`
 
-> Use rel abundance or PA?
-> Is it fine to use a lizard as a sample with site as a RE?
+> Combine pitfall/sticky data?  
+Use rel abundance or PA?  
+Is it fine to use a trap/lizard as a sample, with site as a RE?  
+Remove rare taxa?
 
-3. PREDICT DIET BY PREY?
+3. PREDICT DIET BY PREY
 
-> Method???
+- Multivariate GLMM:
+
+`diet abundances ~ prey abundances + RANDOM:site`
+
+> Is this even a thing you can do???
 
 ### Random ideas
 

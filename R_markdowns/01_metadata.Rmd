@@ -44,11 +44,6 @@ Descriptions of raw datasets used in further analyses. Datasets are located in t
         ├── prey_pitfall.csv         # Pitfall trap invert ID (all islands)
         └── prey_sticky.csv          # Sticky trap invert ID (all islands)
 
-Limitations:
-
-- Prey/diet IDed to order
-- Prey measured as relative abundance
-
 ```{r packages and data, class.source = 'fold-show'}
 
 ##### PACKAGES #####
@@ -70,19 +65,11 @@ prey_s_raw <- read_csv("data_raw/field/prey_sticky.csv")
 
 ### Site metadata
 
-**Variables**
-
-- `variable_name`: definition
-
 ```{r}
 meta_raw
 ```
 
 ### Stomach pump invert ID
-
-**Variables**
-
-- `variable_name`: definition
 
 ```{r}
 diet_raw
@@ -90,19 +77,11 @@ diet_raw
 
 ### Vegetation quadrats
 
-**Variables**
-
-- `variable_name`: definition
-
 ```{r}
 veg_raw
 ```
 
 ### Pitfall/sticky metadata
-
-**Variables**
-
-- `variable_name`: definition
 
 ```{r}
 prey_meta_raw
@@ -110,19 +89,11 @@ prey_meta_raw
 
 ### Pitfall trap invert ID (all islands)
 
-**Variables**
-
-- `variable_name`: definition
-
 ```{r}
 prey_p_raw
 ```
 
 ### Sticky trap invert ID (all islands)
-
-**Variables**
-
-- `variable_name`: definition
 
 ```{r}
 prey_s_raw
