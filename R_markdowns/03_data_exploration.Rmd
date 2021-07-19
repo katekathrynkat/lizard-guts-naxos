@@ -37,6 +37,7 @@ Exploring the data
 ##### PACKAGES #####
 
 library(tidyverse) # data manipulation & visualization
+library(vegan) # community analysis
 
 ##### DATA #####
 
@@ -44,7 +45,7 @@ library(tidyverse) # data manipulation & visualization
 meta <- read_csv("data_raw/field/naxos_meta.csv")
 
 # Stomach pumping
-diet <- read_csv("output/02_diet.csv")
+diet_dat <- read_csv("output/02_diet.csv")
 
 # Available prey community
 prey_meta <- read_csv("output/02_prey_meta.csv")
@@ -58,62 +59,214 @@ prey_s <- read_csv("output/02_prey_s.csv")
 # Data wrangling
 
 prey_p_long <- prey_p %>% 
-  pivot_longer(6:31, names_to = "order", values_to = "count")
+  select(-gecko, -lizard) %>% 
+  pivot_longer(6:29, names_to = "order", values_to = "count")
 
 prey_s_long <- prey_s %>% 
-  pivot_longer(6:24, names_to = "order", values_to = "count")
+  select(-gecko) %>% 
+  pivot_longer(6:23, names_to = "order", values_to = "count")
 
 prey <- full_join(prey_p_long, prey_s_long) %>% 
-  full_join(meta[2:4])
+  full_join(meta[2:4]) %>% 
+  filter(count != 0) %>% 
+  mutate(site_type = paste0(use, "-use-", veg, "-veg"))
+
+diet <- diet_dat %>% 
+  select(-c(33:43)) %>% 
+  pivot_longer(5:32, names_to = "order", values_to = "count") %>% 
+  full_join(meta[2:4]) %>% 
+  filter(count != 0) %>% 
+  mutate(site_type = paste0(use, "-use-", veg, "-veg"))
 
 ```
 
 ## Prey community
+
+### Abundance by order
+
+Abundance
 
 ```{r}
 
 # Summary table
 
 prey %>% 
-  group_by(order) %>% 
-  tally(count) %>% 
-  arrange(-n)
+  group_by(order, trap_type) %>% 
+  summarise(n = sum(count)) %>% 
+  pivot_wider(names_from = trap_type, values_from = n) %>% 
+  mutate(total = pitfall + sticky) %>% 
+  arrange(-total)
 
+```
+
+P/A
+
+```{r}
+
+# Summary table
 
 prey %>% 
+  group_by(order, trap_type) %>% 
+  summarise(n = length(count)) %>% 
+  pivot_wider(names_from = trap_type, values_from = n) %>% 
+  mutate(total = pitfall + sticky) %>% 
+  arrange(-total)
+
+```
+
+### Total abundance by site type
+
+```{r}
+
+prey %>% 
+  # wrangle data
+  group_by(use, veg, trap_type, site, sampleID) %>% 
+  summarise(n = sum(count)) %>% 
+  # plot
+  ggplot(aes(x = trap_type, y = n)) +
+  geom_jitter(aes(color = site),
+              width = 0.1, size = 1.5) +
+  geom_boxplot(fill = NA, outlier.shape = NA) +
+  theme_classic() +
+  theme(legend.position = 'NA',
+        axis.text.y = element_text(size = 9),
+        axis.text.x = element_text(size = 9)) +
+  labs(x='', y='Total abundance (indv/site)') +
+  facet_grid(rows = vars(use), cols = vars(veg))
+
+```
+
+## Diet
+
+### Abundance by order
+
+```{r}
+
+diet %>% 
   group_by(order) %>% 
-  tally(count) %>% 
-  arrange(-n)
+  summarise(n = sum(count))
+
+```
+
+```{r}
+
+diet %>% 
+  # wrangle data
+  group_by(use, veg, site, lizard_id) %>% 
+  summarise(n = sum(count)) %>% 
+  # plot
+  ggplot(aes(x = 1, y = n)) +
+  geom_jitter(aes(color = site),
+              width = 0.1, size = 1.5) +
+  geom_boxplot(fill = NA, outlier.shape = NA) +
+  theme_classic() +
+  theme(legend.position = 'NA',
+        axis.text.y = element_text(size = 9),
+        axis.text.x = element_text(size = 9)) +
+  labs(x='', y='Total abundance (indv/site)') +
+  facet_grid(rows = vars(use), cols = vars(veg))
 
 ```
 
 
-## Diet
+## NMDS
 
+```{r eval=FALSE}
+
+# Site by species matrix
+
+matrix <- as.matrix(matrix_df[-c(1,2)])
+rownames(matrix) <- matrix_df$site
+
+matrix_hell <- decostand(matrix, 'hellinger') # Hellinger transformation
+
+# Severity data frame
+sevs <- select(matrix_df, site, severity)
+
+```
+
+```{r eval=FALSE}
+
+# NMDS with relative abundance data (2 dimensions)
+set.seed(17)
+ord <- metaMDS(matrix_hell,
+               distance = 'bray',
+               autotransform = FALSE,
+               k = 3, # number of dimensions
+               try=50)
+ord$stress # 0.096
+
+```
+
+```{r eval=FALSE, fig.height=4, results='hide',fig.keep='all', fig.show="hold", out.width="50%"}
+
+# Stress plot
+stressplot(ord)
+
+# Scree plot to check stress per number of dimensions
+dimcheckMDS(matrix_hell, distance = "bray", autotransform = FALSE, k = 10, trymax = 20)
+
+```
+    
+```{r eval=FALSE}
+
+cols <- c('darkgreen', 'orange', 'red')
+par(mar = c(4,4,1,1))
+plot(ord, display = 'species', type = 'n')
+points(ord, display = 'sites',
+       cex = 1.5, pch = 19, col = cols[sevs$severity])
+ordiellipse(ord, groups = sevs$severity,
+            label = TRUE, col = cols, lwd = 2)
+text(ord, display = 'species',
+     cex = 0.6)
+
+```
 
 ## Notes & resources
 
-Potential analyses:
+### Plan of analytical attack
+
+1. PREY COMMUNITY
+
+- NMDS of traps, vectors for veg and land use
+- Multivariate GLMM:
+
+`taxa abundances ~ land use + veg + RANDOM:site`
+
+> Combine pitfall/sticky?
+> Use rel abundance or PA?
+> Is it fine to use a trap as a sample with site as a RE?
+
+2. DIET
+
+- NMDS of lizards, vectors for veg and land use
+- Multivariate GLMM:
+
+`taxa abundances ~ land use + veg + RANDOM:site`
+
+> Use rel abundance or PA?
+> Is it fine to use a lizard as a sample with site as a RE?
+
+3. PREDICT DIET BY PREY?
+
+> Method???
+
+### Random ideas
 
 - Diversity/abundance (prey and diet)
-- Prey selectivity index
-- NMDS
 - Herbivory/myrmecophagy
-- Selection for prey type
-- Prey composition vs. habitat type / vegetation
 - Biomass (using literature data)
+- Prey selectivity indices
+- Invert functional groups (e.g. hardness, activity level)
 
-To do: 
+### Qs 4 Colin
+
+- Land use gradient instead of binary?
+
+### To do: 
 
 - Separate ants using comments
-
-Data exploration (compare by land use category)
-
-- Summarize prey/diet by frequency and incidence of each OTU
-- Summarize abundance and diversity of prey/diet
-- Summarize incidence of herbivory/myrmecophagy
 - Flag rare OTUs
-- NMDS of prey vs. diet
 
 <br>
 <br>
