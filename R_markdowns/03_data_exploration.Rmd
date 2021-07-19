@@ -37,17 +37,61 @@ Exploring the data
 ##### PACKAGES #####
 
 library(tidyverse) # data manipulation & visualization
-library(katereR) # my favorite ggplot themes
 
 ##### DATA #####
 
+# Metadata
+meta <- read_csv("data_raw/field/naxos_meta.csv")
+
+# Stomach pumping
+diet <- read_csv("output/02_diet.csv")
+
+# Available prey community
+prey_meta <- read_csv("output/02_prey_meta.csv")
+prey_p <- read_csv("output/02_prey_p.csv")
+prey_s <- read_csv("output/02_prey_s.csv")
+
 ```
 
-## TO DO
+```{r}
 
-- Finish looking through Colin's papers to make sure you don't duplicate analyses
+# Data wrangling
 
-## Notes from March
+prey_p_long <- prey_p %>% 
+  pivot_longer(6:31, names_to = "order", values_to = "count")
+
+prey_s_long <- prey_s %>% 
+  pivot_longer(6:24, names_to = "order", values_to = "count")
+
+prey <- full_join(prey_p_long, prey_s_long) %>% 
+  full_join(meta[2:4])
+
+```
+
+## Prey community
+
+```{r}
+
+# Summary table
+
+prey %>% 
+  group_by(order) %>% 
+  tally(count) %>% 
+  arrange(-n)
+
+
+prey %>% 
+  group_by(order) %>% 
+  tally(count) %>% 
+  arrange(-n)
+
+```
+
+
+## Diet
+
+
+## Notes & resources
 
 Potential analyses:
 
@@ -62,32 +106,14 @@ Potential analyses:
 To do: 
 
 - Separate ants using comments
-- Finalize output data (except OTU metadata, e.g. hardness/size)
 
 Data exploration (compare by land use category)
 
 - Summarize prey/diet by frequency and incidence of each OTU
 - Summarize abundance and diversity of prey/diet
 - Summarize incidence of herbivory/myrmecophagy
-- Remove rare OTUs
+- Flag rare OTUs
 - NMDS of prey vs. diet
-
-## Prey community
-
-- Richness/evenness
-- NMDS
-
-## Diet
-
-- Prey selectivity?
-  - Check that doesn't overlap with Colin's thesis
-- Herbivory, myrmecophagy
-
-## Context
-
-## Notes & resources
-
-- [Webpage](link), author
 
 <br>
 <br>

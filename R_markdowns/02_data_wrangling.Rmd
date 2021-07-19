@@ -36,23 +36,70 @@ Wrangling data
 
 ##### PACKAGES #####
 
-# library(tidyverse) # data manipulation & visualization
-# library(katereR) # my favorite ggplot themes
-
-##### SOURCE CODE #####
-
-# source('R_scripts/FILE_NAME.R')
+library(tidyverse) # data manipulation & visualization
 
 ##### DATA #####
 
-# Brief description
-# read_csv()
+# Stomach pump invert ID (all islands)
+diet_raw <- read_csv('data_raw/field/diet_field.csv')
+
+# Site metadata (Naxos)
+meta_raw <- read_csv('data_raw/field/naxos_meta.csv')
+
+# Vegetation quadrats (Naxos)
+veg_raw <- read_csv('data_raw/field/naxos_veg.csv')
+
+# Pitfall/sticky metadata (all islands)
+prey_meta_raw <- read_csv('data_raw/field/prey_meta.csv')
+
+# Pitfall trap invert ID (all islands)
+prey_p_raw <- read_csv('data_raw/field/prey_pitfall.csv')
+
+# Sticky trap invert ID (all islands)
+prey_s_raw <- read_csv('data_raw/field/prey_sticky.csv')
 
 ```
 
 #### Output files
 
-- **file_name.ext**: Brief description
+- **02_diet.csv**: Naxos stomach pump invert ID
+
+## Wrangling
+
+### Lizard diet
+
+```{r}
+
+diet <- diet_raw %>% 
+  filter(island == "Naxos")
+
+write_csv(diet, "output/02_diet.csv", col_names = TRUE)
+
+```
+
+### Available prey community
+
+```{r}
+
+prey_meta <- prey_meta_raw %>% 
+  filter(island == "Naxos")
+
+prey_p <- prey_p_raw %>% 
+  filter(island == "Naxos") %>% 
+  mutate(trap_type = "pitfall",
+         sampleID = paste0("P-", site, "-", trap))
+
+prey_s <- prey_s_raw %>% 
+  filter(island == "Naxos") %>% 
+  mutate(trap_type = "sticky",
+         sampleID = paste0("S-", site, "-", trap))
+
+write_csv(prey_meta, "output/02_prey_meta.csv", col_names = TRUE)
+write_csv(prey_p, "output/02_prey_p.csv", col_names = TRUE)
+write_csv(prey_s, "output/02_prey_s.csv", col_names = TRUE)
+
+```
+
 
 ## Notes & resources
 

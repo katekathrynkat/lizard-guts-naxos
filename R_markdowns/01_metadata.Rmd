@@ -57,12 +57,12 @@ library(tidyverse) # data manipulation & visualization
 
 ##### DATA #####
 
-diet <- read_csv('data_raw/field/diet_field.csv')
-meta <- read_csv('data_raw/field/naxos_meta.csv')
-veg <- read_csv('data_raw/field/naxos_veg.csv')
-prey_meta <- read_csv('data_raw/field/prey_meta.csv')
-prey_p <- read_csv('data_raw/field/prey_pitfall.csv')
-prey_s <- read_csv('data_raw/field/prey_sticky.csv')
+diet_raw <- read_csv("data_raw/field/diet_field.csv")
+meta_raw <- read_csv("data_raw/field/naxos_meta.csv")
+veg_raw <- read_csv("data_raw/field/naxos_veg.csv")
+prey_meta_raw <- read_csv("data_raw/field/prey_meta.csv")
+prey_p_raw <- read_csv("data_raw/field/prey_pitfall.csv")
+prey_s_raw <- read_csv("data_raw/field/prey_sticky.csv")
 
 ```
 
@@ -75,7 +75,7 @@ prey_s <- read_csv('data_raw/field/prey_sticky.csv')
 - `variable_name`: definition
 
 ```{r}
-meta
+meta_raw
 ```
 
 ### Stomach pump invert ID
@@ -85,7 +85,7 @@ meta
 - `variable_name`: definition
 
 ```{r}
-diet
+diet_raw
 ```
 
 ### Vegetation quadrats
@@ -95,7 +95,7 @@ diet
 - `variable_name`: definition
 
 ```{r}
-veg
+veg_raw
 ```
 
 ### Pitfall/sticky metadata
@@ -105,7 +105,7 @@ veg
 - `variable_name`: definition
 
 ```{r}
-prey_meta
+prey_meta_raw
 ```
 
 ### Pitfall trap invert ID (all islands)
@@ -115,7 +115,7 @@ prey_meta
 - `variable_name`: definition
 
 ```{r}
-prey_p
+prey_p_raw
 ```
 
 ### Sticky trap invert ID (all islands)
@@ -125,22 +125,8 @@ prey_p
 - `variable_name`: definition
 
 ```{r}
-prey_s
+prey_s_raw
 ```
-
-## Important things
-
-<div class = "important">
-
-Something important
-
-</div>
-
-> Note about something to check later
-
-## Notes & resources
-
-- [Webpage](link), author
 
 <br>
 <br>
