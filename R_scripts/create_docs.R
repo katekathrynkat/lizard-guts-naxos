@@ -11,19 +11,19 @@ library(katereR)
 ##### Create docs for website #####
 # Render to /docs
 
-rmarkdown::render_site("example")
+rmarkdown::render_site("R_markdowns")
 
 ##### Standalone HTML docs #####
 # Render to /reports
 
 # Index
-katereR::render_report("R_markdowns/index.Rmd",
+katereR::render_report(input = "../R_markdowns/index.Rmd",
                        output_file = "../reports/index.html")
 
 # 01 Metadata
-katereR::render_report("R_markdowns/01_metadata.html",
+katereR::render_report(input = "../R_markdowns/01_metadata.html",
                        output_file = "../reports/01_metadata.html")
 
 # 02 Data wrangling
-katereR::render_report("R_markdowns/02_data_wrangling.html",
+katereR::render_report(input = "R_markdowns/02_data_wrangling.html",
                        output_file = "../reports/02_data_wrangling.html")

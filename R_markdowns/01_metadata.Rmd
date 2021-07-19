@@ -34,10 +34,15 @@ Descriptions of raw datasets used in further analyses. Datasets are located in t
 
     data_raw
     ├── field                        # Field/lab measurements
-        ├── original_spreadsheets        # 
-            ├── [...].xlxs                  # 
-            └── data_errata.txt             # 
-        ├── .csv            
+        ├── original_spreadsheets        # Pre-cleaning data
+            ├── [...].xlxs                  # Original Excel files
+            └── data_errata.txt             # Log of corrections made to .csv files
+        ├── diet_field.csv           # Stomach pump invert ID (all islands)
+        ├── naxos_meta.csv           # Site metadata (Naxos)
+        ├── naxos_veg.csv            # Vegetation quadrats (Naxos)
+        ├── prey_meta.csv            # Pitfall/sticky metadata (all islands)
+        ├── prey_pitfall.csv         # Pitfall trap invert ID (all islands)
+        └── prey_sticky.csv          # Sticky trap invert ID (all islands)
 
 Limitations:
 
@@ -52,30 +57,76 @@ library(tidyverse) # data manipulation & visualization
 
 ##### DATA #####
 
-# Brief description
-read_csv()
+diet <- read_csv('data_raw/field/diet_field.csv')
+meta <- read_csv('data_raw/field/naxos_meta.csv')
+veg <- read_csv('data_raw/field/naxos_veg.csv')
+prey_meta <- read_csv('data_raw/field/prey_meta.csv')
+prey_p <- read_csv('data_raw/field/prey_pitfall.csv')
+prey_s <- read_csv('data_raw/field/prey_sticky.csv')
 
 ```
 
 ## Field/lab data
 
-### Dataset 1
-
-Brief description of data
+### Site metadata
 
 **Variables**
 
 - `variable_name`: definition
 
 ```{r}
-
-iris
-
+meta
 ```
 
-## Literature data
+### Stomach pump invert ID
 
-## Spatial data
+**Variables**
+
+- `variable_name`: definition
+
+```{r}
+diet
+```
+
+### Vegetation quadrats
+
+**Variables**
+
+- `variable_name`: definition
+
+```{r}
+veg
+```
+
+### Pitfall/sticky metadata
+
+**Variables**
+
+- `variable_name`: definition
+
+```{r}
+prey_meta
+```
+
+### Pitfall trap invert ID (all islands)
+
+**Variables**
+
+- `variable_name`: definition
+
+```{r}
+prey_p
+```
+
+### Sticky trap invert ID (all islands)
+
+**Variables**
+
+- `variable_name`: definition
+
+```{r}
+prey_s
+```
 
 ## Important things
 
