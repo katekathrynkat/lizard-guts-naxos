@@ -14,6 +14,9 @@ navbar:
     - text: "Data exploration"
       href: "03_data_exploration.html"
     icon: fa-chart-line
+  - text: "Notes"
+    href: "notes.html"
+    icon: fa-sticky-note
   right:
   - href: https://github.com/katekathrynkat/lizard-guts-naxos/
     icon: fa-github

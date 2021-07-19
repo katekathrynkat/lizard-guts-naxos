@@ -1,0 +1,62 @@
+---
+title: "Notes"
+output:
+  katereR::t_simple
+---
+
+```{r setup, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+knitr::opts_knit$set(root.dir = '..')
+knitr::opts_chunk$set(echo = TRUE, results = 'hold',
+                      warning = FALSE, message = FALSE,
+                      fig.width=5, fig.height=3, rows.print=5)
+```
+
+## Plan of analytical attack
+
+### 1. DOES INVERT COMMUNITY VARY WITH HABITAT?
+
+- NMDS of traps, vectors for veg and land use
+- Multivariate GLMM:
+
+`taxa abundances ~ land use + veg + RANDOM:site`
+
+### 2. DOES LIZARD DIET VARY WITH HABITAT?
+
+- NMDS of lizards, vectors for veg and land use
+- Multivariate GLMM:
+
+`taxa abundances ~ land use + veg + RANDOM:site`
+
+> Combine pitfall/sticky data?  
+Use rel abundance or PA?  
+Is it fine to use a trap/lizard as a sample, with site as a RE?  
+Remove rare taxa (limit to top 8 prey items)?
+
+### 3. DOES INVERT COMMUNITY PREDICT LIZARD DIET?
+
+- Multivariate GLMM:
+
+`diet abundances ~ prey abundances + RANDOM:site`
+
+> Is this even a thing you can do???
+
+### 4. WHAT ABOUT PLANTS AND ANTS?
+
+- Something simple about herbivory/myrmecophagy because it's especially weird/interesting
+
+## Other ideas
+
+- Diversity/abundance
+- Invert biomass
+- Invert functional groups (e.g. hardness, activity level)
+- Prey selectivity indices
+
+## Qs 4 Colin
+
+- Land use gradient instead of binary?
+
+## To do: 
+
+- Separate ants using comments
+- Flag rare OTUs
