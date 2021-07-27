@@ -99,13 +99,3 @@ prey_p_raw
 prey_s_raw
 ```
 
-<br>
-<br>
-<br>
-
-<details><summary>**Session info**</summary>
-```{r code}
-devtools::session_info()
-```
-</details>
-

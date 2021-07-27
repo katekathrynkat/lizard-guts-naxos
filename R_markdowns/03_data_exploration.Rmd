@@ -30,66 +30,39 @@ Exploring the data
 
 ***
 
-#### Dependencies
+**DEPENDENCIES**
 
 ```{r packages and data, class.source = 'fold-show'}
 
 ##### PACKAGES #####
 
 library(tidyverse) # data manipulation & visualization
-library(vegan) # community analysis
+library(vegan) # community analyses
+library(goeveg) # scree plot for NMDS
 
 ##### DATA #####
 
-# Metadata
-meta <- read_csv("data_raw/field/naxos_meta.csv")
+# Invertebrate counts by order from sticky and pitfall trap samples
+prey <- read_csv("output/02_prey.csv")
 
-# Stomach pumping
-diet_dat <- read_csv("output/02_diet.csv")
+# Invertebrate counts by order from lizard stomach pumping samples
+diet <- read_csv("output/02_diet_inverts.csv")
 
-# Available prey community
-prey_meta <- read_csv("output/02_prey_meta.csv")
-prey_p <- read_csv("output/02_prey_p.csv")
-prey_s <- read_csv("output/02_prey_s.csv")
+# Site by species matrix (invert prey data)
+prey_matrix <- read_csv("output/02_prey_matrix.csv")
 
-```
-
-```{r}
-
-# Data wrangling
-
-prey_p_long <- prey_p %>% 
-  select(-gecko, -lizard) %>% 
-  pivot_longer(6:29, names_to = "order", values_to = "count")
-
-prey_s_long <- prey_s %>% 
-  select(-gecko) %>% 
-  pivot_longer(6:23, names_to = "order", values_to = "count")
-
-prey <- full_join(prey_p_long, prey_s_long) %>% 
-  full_join(meta[2:4]) %>% 
-  filter(count != 0) %>% 
-  mutate(site_type = paste0(use, "-use-", veg, "-veg"))
-
-diet <- diet_dat %>% 
-  select(-c(33:43)) %>% 
-  pivot_longer(5:32, names_to = "order", values_to = "count") %>% 
-  full_join(meta[2:4]) %>% 
-  filter(count != 0) %>% 
-  mutate(site_type = paste0(use, "-use-", veg, "-veg"))
+# Site by species matrix (diet data)
+diet_matrix <- read_csv("output/02_diet_matrix.csv")
 
 ```
 
-## Prey community
+## Abundance by order
 
-### Abundance by order
-
-Abundance
+### Available prey community
 
 ```{r}
 
 # Summary table
-
 prey %>% 
   group_by(order, trap_type) %>% 
   summarise(n = sum(count)) %>% 
@@ -99,128 +72,103 @@ prey %>%
 
 ```
 
-P/A
-
 ```{r}
 
-# Summary table
-
+# Abundance by order
 prey %>% 
-  group_by(order, trap_type) %>% 
-  summarise(n = length(count)) %>% 
-  pivot_wider(names_from = trap_type, values_from = n) %>% 
-  mutate(total = pitfall + sticky) %>% 
-  arrange(-total)
-
-```
-
-### Total abundance by site type
-
-```{r}
-
-prey %>% 
-  # wrangle data
-  group_by(use, veg, trap_type, site, sampleID) %>% 
-  summarise(n = sum(count)) %>% 
-  # plot
-  ggplot(aes(x = trap_type, y = n)) +
-  geom_jitter(aes(color = site),
+  ggplot(aes(x = trap_type, y = count)) +
+  geom_jitter(aes(color = trap_type),
               width = 0.1, size = 1.5) +
   geom_boxplot(fill = NA, outlier.shape = NA) +
+  facet_wrap(~ fct_reorder(order, count, .fun = sum, .desc = TRUE),
+             scales = "free_y") +
   theme_classic() +
-  theme(legend.position = 'NA',
-        axis.text.y = element_text(size = 9),
-        axis.text.x = element_text(size = 9)) +
-  labs(x='', y='Total abundance (indv/site)') +
-  facet_grid(rows = vars(use), cols = vars(veg))
+  theme(legend.position = "NA") +
+  labs(x = "Trap type", y = "Abundance (indv/trap)")
 
 ```
 
-## Diet
-
-### Abundance by order
+### Diet
 
 ```{r}
 
+# Summary table
 diet %>% 
   group_by(order) %>% 
-  summarise(n = sum(count))
+  summarise(n = sum(count)) %>% 
+  arrange(-n)
 
 ```
 
 ```{r}
 
+# Abundance by order
 diet %>% 
-  # wrangle data
-  group_by(use, veg, site, lizard_id) %>% 
-  summarise(n = sum(count)) %>% 
-  # plot
-  ggplot(aes(x = 1, y = n)) +
-  geom_jitter(aes(color = site),
-              width = 0.1, size = 1.5) +
+  # Data wrangling
+  group_by(order) %>% 
+  mutate(n = length(count)) %>% 
+  # Plot
+  ggplot(aes(x = fct_reorder(order, count, .fun = sum, .desc = TRUE), y = count)) +
+  geom_jitter(width = 0.1, size = 1.5) +
   geom_boxplot(fill = NA, outlier.shape = NA) +
+  geom_text(aes(y = 80, label = paste("n =", n)),
+            stat = "unique", angle = 90, size = 3) +
+  scale_y_log10() +
   theme_classic() +
-  theme(legend.position = 'NA',
-        axis.text.y = element_text(size = 9),
-        axis.text.x = element_text(size = 9)) +
-  labs(x='', y='Total abundance (indv/site)') +
-  facet_grid(rows = vars(use), cols = vars(veg))
+  theme(legend.position = "NA",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Order", y = "Abundance (indv/lizard)")
 
 ```
-
 
 ## NMDS
 
-```{r eval=FALSE}
+### Invert trap data 
 
-# Site by species matrix
+```{r cache=TRUE}
 
-matrix <- as.matrix(matrix_df[-c(1,2)])
-rownames(matrix) <- matrix_df$site
+# Wrangle matrix
+m_p <- as.matrix(prey_matrix[-c(1:4)])
+rownames(m_p) <- prey_matrix$sample
+m_p_hell <- decostand(m_p, 'hellinger') # Hellinger transformation
+m_p_meta <- select(prey_matrix, sample, site, trap, trap_type) # metadata
 
-matrix_hell <- decostand(matrix, 'hellinger') # Hellinger transformation
+# Scree plot to check stress per number of dimensions
+dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
 
-# Severity data frame
-sevs <- select(matrix_df, site, severity)
-
-```
-
-```{r eval=FALSE}
-
-# NMDS with relative abundance data (2 dimensions)
-set.seed(17)
-ord <- metaMDS(matrix_hell,
-               distance = 'bray',
-               autotransform = FALSE,
+# Create NMDS ordination
+ord <- metaMDS(m_p_hell,
+               distance = 'bray', # use Bray-Curtis distances
+               autotransform = FALSE, # already manually transformed the matrix
                k = 3, # number of dimensions
-               try=50)
-ord$stress # 0.096
-
-```
-
-```{r eval=FALSE, fig.height=4, results='hide',fig.keep='all', fig.show="hold", out.width="50%"}
+               trymax = 1000)
 
 # Stress plot
 stressplot(ord)
 
-# Scree plot to check stress per number of dimensions
-dimcheckMDS(matrix_hell, distance = "bray", autotransform = FALSE, k = 10, trymax = 20)
-
 ```
-    
-```{r eval=FALSE}
 
-cols <- c('darkgreen', 'orange', 'red')
+```{r}
+
+# Plot ordination
+scale_trap <- c("red", "orange")
+names(scale_trap) <- c("pitfall", "sticky")
 par(mar = c(4,4,1,1))
 plot(ord, display = 'species', type = 'n')
-points(ord, display = 'sites',
-       cex = 1.5, pch = 19, col = cols[sevs$severity])
-ordiellipse(ord, groups = sevs$severity,
-            label = TRUE, col = cols, lwd = 2)
-text(ord, display = 'species',
-     cex = 0.6)
+points(ord, display = 'sites', pch = 19, col = scale_trap[m_p_meta$trap_type])
+ordiellipse(ord, groups = m_p_meta$trap_type,
+            label = TRUE, col = scale_trap, lwd = 2)
+text(ord, display = 'species')
 
 ```
+
+Ordination stress = `r ord$stress`
+
+## Notes & resources
+
+<br>
+<br>
+<br>
 
 <details><summary>**Session info**</summary>
 ```{r code}

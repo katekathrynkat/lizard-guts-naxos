@@ -12,6 +12,10 @@ knitr::opts_chunk$set(echo = TRUE, results = 'hold',
                       fig.width=5, fig.height=3, rows.print=5)
 ```
 
+## Questions
+
+###
+
 ## Plan of analytical attack
 
 ### 1. How does invert community vary with land use and veg cover?
