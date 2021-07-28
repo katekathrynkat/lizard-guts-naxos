@@ -14,15 +14,14 @@ output:
 
 ```{r setup, include=FALSE}
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
-knitr::opts_knit$set(root.dir = '..')
-knitr::opts_chunk$set(echo = TRUE, results = 'hold',
-                      warning = FALSE, message = FALSE,
+knitr::opts_knit$set(root.dir='..')
+knitr::opts_chunk$set(echo=TRUE, results='hold', warning=FALSE, message=FALSE,
                       fig.width=5, fig.height=3, rows.print=5)
 ```
 
 <div class = "summary">
 
-**Summary**
+**SUMMARY**
 
 Exploring the data
 
@@ -32,7 +31,7 @@ Exploring the data
 
 **DEPENDENCIES**
 
-```{r packages and data, class.source = 'fold-show'}
+```{r dependencies, class.source='fold-show'}
 
 ##### PACKAGES #####
 
@@ -72,7 +71,7 @@ prey %>%
 
 ```
 
-```{r}
+```{r fig.width=8, fig.height=5}
 
 # Abundance by order
 prey %>% 
@@ -100,7 +99,7 @@ diet %>%
 
 ```
 
-```{r}
+```{r fig.width=8, fig.height=5}
 
 # Abundance by order
 diet %>% 
@@ -136,6 +135,10 @@ m_p_meta <- select(prey_matrix, sample, site, trap, trap_type) # metadata
 # Scree plot to check stress per number of dimensions
 dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
 
+```
+
+```{r cache=TRUE, results='hide', class.source='fold-show'}
+
 # Create NMDS ordination
 ord <- metaMDS(m_p_hell,
                distance = 'bray', # use Bray-Curtis distances
@@ -148,7 +151,7 @@ stressplot(ord)
 
 ```
 
-```{r}
+```{r fig.width=8, fig.height=5}
 
 # Plot ordination
 scale_trap <- c("red", "orange")
@@ -162,7 +165,7 @@ text(ord, display = 'species')
 
 ```
 
-Ordination stress = `r ord$stress`
+K = `r ord$ndim`; ordination stress = `r ord$stress`
 
 ## Notes & resources
 
@@ -171,8 +174,7 @@ Ordination stress = `r ord$stress`
 <br>
 
 <details><summary>**Session info**</summary>
-```{r code}
+```{r session-info}
 devtools::session_info()
 ```
 </details>
-

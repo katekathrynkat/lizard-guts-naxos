@@ -19,7 +19,7 @@ navbar:
       href: "03_data_exploration.html"
     icon: fa-chart-line
   - text: "Notes"
-    href: "notes.html"
+    href: "99_notes.html"
     icon: fa-sticky-note
   right:
   - href: https://github.com/katekathrynkat/lizard-guts-naxos/

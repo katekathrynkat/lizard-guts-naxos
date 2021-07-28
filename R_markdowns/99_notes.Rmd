@@ -1,0 +1,95 @@
+---
+title: "Notes"
+output:
+  katereR::t_notes
+---
+
+```{r setup, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+knitr::opts_knit$set(root.dir = '..')
+```
+
+## Questions
+
+###
+
+## Plan of analytical attack
+
+### 1. How does invert community vary with land use and veg cover?
+
+- Visualize with NMDS
+  - Point for each trap (color-coded by pitfall vs. sticky trap type)
+  - Vectors for veg cover (by life form)
+    - We have trap-specific vegetation data
+  - Vector for land use (might need to be binary --> polygon)
+- Model with multivariate GLMM (via mvabund)
+
+`taxa abundances ~ land use + veg cover (by lifeform) + RE:site + RE:trap type`
+
+> 
+- How to combine pitfall/sticky data?  
+  - Option 1: As described above (for NMDS, color-code by trap type; for GLMM, include trap type as a RE)  
+  - Option 2: Two separate analyses (this seems confusing)  
+  - Option 3: Sum abundance by trap pair and use P/A in analyses  
+- Use relative abundance or PA?  
+  - For now I'm planning to do both and compare  
+- Is it fine to use a trap as a sample (with site as a RE)?  
+  - I'm worried about independence of samples, but also we only have 9 sites?  
+- Should I remove rare taxa?  
+  - I'm thinking of limiting everything to the top 8(?) lizard prey taxa
+
+### 2. How does lizard diet vary with habitat?
+
+- Visualize with NMDS
+  - Point for each lizard gut sample
+  - Vectors for veg cover (by life form)
+    - These would have to be based on site averages, since we obviously don't have lizard-specific vegetation data
+  - Vector for land use (might need to be binary --> polygon)
+- Model with multivariate GLMM (via mvabund)
+
+`taxa abundances ~ land use + veg cover (by lifeform) + RE:site`
+
+> Same questions as above:  
+- Use relative abundance or PA? (planning to do both and compare)  
+- Is it fine to use a lizard as a sample (with site as a RE)?  
+- Should I remove rare taxa?  (maybe limit to top 8 prey taxa)
+
+### 3. Does invert community predict lizard diet?
+
+- Maybe visualize with some sort of correlation matrix?
+  - I'm thinking prey items on the x and diet items on the y, color coded by strength of interaction?
+- Model with multivariate GLMM (via mvabund)
+
+`diet abundances ~ prey abundances + RANDOM:site`
+
+> 
+- Is this even a thing you can do???  
+  - I think it is I just can't find an example with mvabund yet but haven't looked very hard  
+- Same as above: Use relative abundance or PA?  
+  - I think that 
+
+### 4. What about plants and ants?
+
+- Something simple about herbivory and/or myrmecophagy because they're especially weird/interesting
+- Visualize with 
+  - Maybe boxplots for land use (if needs to be binary)
+- Model with GLMM
+
+`herbivory ~ land use + veg cover (by lifeform) + RE:site`
+`myrmecophagy ~ land use + veg cover (by lifeform) + RE:site`
+
+## Other ideas
+
+- Diversity/abundance
+- Invert biomass
+- Invert functional groups (e.g. hardness, activity level)
+- Prey selectivity indices
+
+## Qs 4 Colin
+
+- Land use gradient instead of binary?
+
+## To do: 
+
+- Separate ants using comments
+- Flag rare OTUs

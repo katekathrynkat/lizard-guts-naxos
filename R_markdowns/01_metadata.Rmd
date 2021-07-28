@@ -14,27 +14,25 @@ output:
 
 ```{r setup, include=FALSE}
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
-knitr::opts_knit$set(root.dir = '..')
-knitr::opts_chunk$set(echo = TRUE, results = 'hold',
-                      warning = FALSE, message = FALSE,
-                      fig.width=5, fig.height=3, rows.print=5)
+knitr::opts_knit$set(root.dir='..')
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, rows.print=5)
 ```
 
 <div class = "summary">
 
-**Summary**
+**SUMMARY**
 
-Descriptions of raw datasets used in further analyses. Datasets are located in the project directory [`data_raw`](https://github.com/katekathrynkat/lizard-guts-naxos/data_raw/).
+Descriptions of raw datasets used in further analyses. Datasets are located in the project directory [`data_raw`](https://github.com/katekathrynkat/lizard-guts-naxos/tree/master/data_raw/).
 
 </div>
 
 ***
 
-#### File locations
+**FILE STRUCTURE**
 
     data_raw
     ├── field                        # Field/lab measurements
-        ├── original_spreadsheets        # Pre-cleaning data
+        ├── original_spreadsheets        # Original data (no cleaning/proofing)
             ├── [...].xlxs                  # Original Excel files
             └── data_errata.txt             # Log of corrections made to .csv files
         ├── diet_field.csv           # Stomach pump invert ID (all islands)
@@ -43,8 +41,10 @@ Descriptions of raw datasets used in further analyses. Datasets are located in t
         ├── prey_meta.csv            # Pitfall/sticky metadata (all islands)
         ├── prey_pitfall.csv         # Pitfall trap invert ID (all islands)
         └── prey_sticky.csv          # Sticky trap invert ID (all islands)
+        
+**DEPENDENCIES**
 
-```{r packages and data, class.source = 'fold-show'}
+```{r dependencies, class.source='fold-show'}
 
 ##### PACKAGES #####
 
@@ -98,4 +98,3 @@ prey_p_raw
 ```{r}
 prey_s_raw
 ```
-

@@ -1,6 +1,1 @@
 Changes to make to katereR:
-
-- Delete session info from metadata Rmd template
-- Add "Notes" Rmd template, and add to website structure
-- Add file locations to metadata template
-- Change #### to bold+caps in Rmd templates

@@ -14,15 +14,14 @@ output:
 
 ```{r setup, include=FALSE}
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
-knitr::opts_knit$set(root.dir = '..')
-knitr::opts_chunk$set(echo = TRUE, results = 'hold',
-                      warning = FALSE, message = FALSE,
+knitr::opts_knit$set(root.dir='..')
+knitr::opts_chunk$set(echo=TRUE, results='hold', warning=FALSE, message=FALSE,
                       fig.width=5, fig.height=3, rows.print=5)
 ```
 
 <div class = "summary">
 
-**Summary**
+**SUMMARY**
 
 Wrangling data 
 
@@ -32,7 +31,7 @@ Wrangling data
 
 **DEPENDENCIES**
 
-```{r packages and data, class.source = 'fold-show'}
+```{r dependencies, class.source='fold-show'}
 
 ##### PACKAGES #####
 
@@ -52,7 +51,7 @@ veg_raw <- read_csv('data_raw/field/naxos_veg.csv')
 
 # Pitfall/sticky metadata (all islands)
 prey_meta_raw <- read_csv('data_raw/field/prey_meta.csv',
-                          col_types = "??cccc???????????????")
+                          col_types = "??cccc???????????????") # dates as chr
 
 # Pitfall trap invert ID (all islands)
 prey_p_raw <- read_csv('data_raw/field/prey_pitfall.csv')
@@ -111,8 +110,10 @@ prey_meta <- prey_meta_raw %>%
   mutate(comments_p = comments.y,
          comments_s = comments,
          comments = comments.x,
-         set = dmy_hm(paste(date_set, time_set)),
-         collected = dmy_hm(paste(date_coll, time_coll)),
+         set = dmy_hm(paste(date_set, time_set),
+                      quiet = TRUE), # suppress warnings
+         collected = dmy_hm(paste(date_coll, time_coll),
+                            quiet = TRUE), # suppress warnings
          hours_open = as.numeric(collected - set)*24,
          pitfall_effort = case_when(
            pitfall_condition == "GOOD" ~ 1,
@@ -238,8 +239,7 @@ diet_veg
 <br>
 
 <details><summary>**Session info**</summary>
-```{r code}
+```{r session-info}
 devtools::session_info()
 ```
 </details>
-
