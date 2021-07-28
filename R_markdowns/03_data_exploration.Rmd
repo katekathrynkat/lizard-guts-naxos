@@ -71,7 +71,7 @@ prey %>%
 
 ```
 
-```{r fig.width=8, fig.height=5}
+```{r fig.width=8, fig.height=8}
 
 # Abundance by order
 prey %>% 
@@ -110,13 +110,13 @@ diet %>%
   ggplot(aes(x = fct_reorder(order, count, .fun = sum, .desc = TRUE), y = count)) +
   geom_jitter(width = 0.1, size = 1.5) +
   geom_boxplot(fill = NA, outlier.shape = NA) +
-  geom_text(aes(y = 80, label = paste("n =", n)),
-            stat = "unique", angle = 90, size = 3) +
+  geom_text(aes(y = 50, label = paste("n =", n)),
+            stat = "unique", angle = 90, size = 3, hjust = 0) +
   scale_y_log10() +
   theme_classic() +
   theme(legend.position = "NA",
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(x = "Order", y = "Abundance (indv/lizard)")
+  labs(x = "Order", y = "Log abundance (indv/lizard)")
 
 ```
 
@@ -124,7 +124,7 @@ diet %>%
 
 ### Invert trap data 
 
-```{r cache=TRUE}
+```{r cache=TRUE, results='hide'}
 
 # Wrangle matrix
 m_p <- as.matrix(prey_matrix[-c(1:4)])
@@ -137,7 +137,7 @@ dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
 
 ```
 
-```{r cache=TRUE, results='hide', class.source='fold-show'}
+```{r cache=TRUE, class.source='fold-show'}
 
 # Create NMDS ordination
 ord <- metaMDS(m_p_hell,
@@ -151,13 +151,13 @@ stressplot(ord)
 
 ```
 
-```{r fig.width=8, fig.height=5}
+```{r fig.width=8, fig.height=6}
 
 # Plot ordination
 scale_trap <- c("red", "orange")
 names(scale_trap) <- c("pitfall", "sticky")
 par(mar = c(4,4,1,1))
-plot(ord, display = 'species', type = 'n')
+plot(ord, display = 'sites', type = 'n')
 points(ord, display = 'sites', pch = 19, col = scale_trap[m_p_meta$trap_type])
 ordiellipse(ord, groups = m_p_meta$trap_type,
             label = TRUE, col = scale_trap, lwd = 2)
@@ -165,7 +165,9 @@ text(ord, display = 'species')
 
 ```
 
-K = `r ord$ndim`; ordination stress = `r ord$stress`
+Number of dimenstions = `r ord$ndim`
+
+Stress = `r round(ord$stress,3)`
 
 ## Notes & resources
 
