@@ -1,0 +1,109 @@
+site,trap,grass,forbs,open,rock,shrubs,dead,moss,other,dist_to_wall,avg_veg_height,comments
+DEMAR,1,20,65,0,0,10,0,0,5,12,0.4,Rained on and off on the 19th
+DEMAR,2,10,5,20,0,65,0,0,0,15,0.3,NA
+DEMAR,3,60,10,30,0,0,0,0,0,5,0.2,NA
+DEMAR,4,10,20,45,20,5,0,0,0,0,0.4,NA
+DEMAR,5,5,5,55,20,5,0,0,10,0,0.2,NA
+DEMAR,6,30,50,8,10,2,0,0,0,0,0.4,NA
+DEMAR,7,20,60,5,10,5,0,0,0,0,0.3,NA
+DEMAR,8,1,0,87,2,10,0,0,0,15,0.3,NA
+DEMAR,9,15,20,40,0,5,0,0,20,12,0.3,Uner Oak tree
+DEMAR,10,5,40,15,0,40,0,0,0,18,0.3,NA
+DEMAR,11,20,75,0,0,5,0,0,0,20,0.45,Sticky Trap fallen
+DEMAR,12,85,10,0,0,5,0,0,0,7,0.25,Trampled; sticky trap 7 m from pitfall trap
+EMONI,1,2,1,97,0,0,0,0,0,8,0.1,"Beneath Tree Canopy, sticky trap tipped over"
+EMONI,2,1,3,71,0,20,0,0,5,0.5,0.3,NA
+EMONI,3,0,35,35,0,30,0,0,0,0.5,0.4,NA
+EMONI,4,5,30,63,0,2,0,0,0,0.5,0.25,NA
+EMONI,5,0,20,20,5,55,0,0,0,0.1,0.6,NA
+EMONI,6,0,35,25,5,35,0,0,0,0.1,0.4,NA
+EMONI,7,5,15,80,0,0,0,0,0,3,0.05,Beneath tree canopy
+EMONI,8,0,1,99,0,0,0,0,0,3,0.01,NA
+EMONI,9,0,0,100,0,0,0,0,0,4,0,NA
+EMONI,10,2,35,38,15,10,0,0,0,0,0.4,NA
+EMONI,11,2,20,23,15,40,0,0,0,0,0.35,NA
+EMONI,12,1,15,39,25,20,0,0,0,0,0.45,NA
+MALYKO,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,5,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,6,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,7,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,8,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,9,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,10,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,11,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+MALYKO,12,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,No veg survey conducted
+NALYKO,1,0,1,59,0,0,0,0,40,NA,1,other=tree
+NALYKO,2,0,0,80,0,20,0,0,0,NA,0.1,NA
+NALYKO,3,0,0,95,0,5,0,0,0,NA,0.1,NA
+NALYKO,4,0,0,100,0,0,0,0,0,NA,0,NA
+NALYKO,5,0,0,100,0,0,0,0,0,NA,0,NA
+NALYKO,6,0,0,99,0,0,0,0,1,NA,0.06,other=tree
+NALYKO,7,0,0,60,0,40,0,0,0,NA,0.06,live Mediodactylus in trap (released)
+NALYKO,8,0,0,45,0,55,0,0,0,NA,0.2,NA
+NALYKO,9,0,0,45,0,55,0,0,0,NA,0.05,NA
+NALYKO,10,0,0,75,0,25,0,0,0,NA,0.04,NA
+NALYKO,11,0,0,10,0,90,0,0,0,NA,0.05,NA
+NALYKO,12,0,0,100,0,0,0,0,0,NA,0,NA
+RACHI,1,3,30,62,0,5,0,0,0,10,0.2,Sticky trap blown away (not recovered)
+RACHI,2,2,10,88,0,0,0,0,0,20,0.5,Sticky trap ripped by wind
+RACHI,3,0,15,60,0,25,0,0,0,45,0.25,NA
+RACHI,4,0,5,78,2,15,0,0,0,45,0.2,NA
+RACHI,5,2,25,68,0,5,0,0,0,20,0.2,NA
+RACHI,6,0,15,60,0,25,0,0,0,60,0.3,NA
+RACHI,7,0,5,70,0,0,25,0,0,15,0.2,Other=dead
+RACHI,8,3,5,47,0,45,0,0,0,30,0.3,NA
+RACHI,9,0,1,5,0,94,0,0,0,65,0.25,NA
+RACHI,10,0,15,10,0,75,0,0,0,15,0.3,NA
+RACHI,11,5,5,60,0,30,0,0,0,30,0.35,NA
+RACHI,12,1,7,72,0,20,0,0,0,60,0.2,P. erhardii in pitfall trap
+SAGRI,1,2,15,68,0,15,0,0,0,3,0.2,P. erhardii in pitfall trap
+SAGRI,2,5,10,55,0,30,0,0,0,4,0.2,NA
+SAGRI,3,25,15,15,0,10,0,35,0,4,0.15,Other=moss
+SAGRI,4,2,25,40,0,20,0,13,0,0.5,0.25,Other=moss
+SAGRI,5,1,20,39,0,35,0,5,0,1,0.5,Other=moss
+SAGRI,6,2,2,56,0,40,0,0,0,1,0.25,NA
+SAGRI,7,0,20,5,25,50,0,0,0,0.25,0.4,NA
+SAGRI,8,15,5,63,15,2,0,0,0,0.5,0.25,NA
+SAGRI,9,50,15,30,0,5,0,0,0,0.5,0.1,Other=dead
+SAGRI,10,5,5,55,0,35,0,0,0,15,0.15,Other=moss
+SAGRI,11,5,25,5,0,0,0,0,65,15,0.2,NA
+SAGRI,12,1,10,0,0,30,0,0,59,10,0.2,NA
+SMONI,1,2,3,65,30,0,0,0,0,0,0.2,NA
+SMONI,2,3,2,75,10,0,0,10,0,0,0.2,NA
+SMONI,3,2,1,97,0,0,0,0,0,1.5,0.1,under olive tree
+SMONI,4,2,8,50,40,0,0,0,0,0,0.25,NA
+SMONI,5,15,25,40,15,0,0,0,5,0,0.3,under small fig tree
+SMONI,6,10,5,85,0,0,0,0,0,3.5,0.25,live Podarcis in trap; released
+SMONI,7,2,3,65,30,0,0,0,0,0,0.25,NA
+SMONI,8,10,30,25,35,0,0,0,0,0,0.35,barely alive Podarcis in trap; died soon thereafter
+SMONI,9,3,2,50,45,0,0,0,0,0,0.3,NA
+SMONI,10,3,32,60,0,0,5,0,0,2,0.15,NA
+SMONI,11,5,0,65,0,30,0,0,0,0,0.4,NA
+SMONI,12,30,10,60,0,0,0,0,0,2,0.4,NA
+VIGLA,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NO VEG SURVEY DATA
+VIGLA,2,1,5,74,10,10,0,0,0,55,0.1,NA
+VIGLA,3,5,15,73,2,5,0,0,0,40,0.3,NA
+VIGLA,4,4,16,75,0,5,0,0,0,35,0.2,NA
+VIGLA,5,5,1,60,30,4,0,0,0,50,0.2,NA
+VIGLA,6,3,10,83,0,4,0,0,0,65,0.1,NA
+VIGLA,7,3,7,70,10,10,0,0,0,75,0.1,NA
+VIGLA,8,2,10,48,10,30,0,0,0,60,0.3,P. erhardii in pitfall trap
+VIGLA,9,0,30,63,5,2,0,0,0,40,0.1,NA
+VIGLA,10,0,35,35,20,10,0,0,0,75,0.1,NA
+VIGLA,11,0,15,70,10,5,0,0,0,60,0.15,NA
+VIGLA,12,0,30,50,0,15,0,0,5,45,0.15,NA
+WMONI,1,30,20,50,0,0,0,0,0,5,0.1,No rock on pitfall; under olive tree
+WMONI,2,40,20,40,0,0,0,0,0,4,0.05,Sticky Trap fallen
+WMONI,3,5,5,60,30,0,0,0,0,0,0.05,NA
+WMONI,4,1,5,79,15,0,0,0,0,0,0.1,NA
+WMONI,5,2,5,88,5,0,0,0,0,0,0.1,Antifreeze dried up?
+WMONI,6,10,5,60,5,0,0,20,0,0,0.1,other=moss; dead Podarcis
+WMONI,7,20,40,40,0,0,0,0,0,3,0.1,Sticky Trap fallen
+WMONI,8,40,20,40,0,0,0,0,0,2.5,0.15,Sticky Trap fallen; under olive tree
+WMONI,9,1,10,79,10,0,0,0,0,0,0.05,NA
+WMONI,10,5,5,75,15,0,0,0,0,0,0.05,sticky trap fallen; rock moved to completely cover pitfall
+WMONI,11,1,5,89,0,0,5,0,0,0,0.1,other=dead; sticky trap fallen
+WMONI,12,2,5,83,5,0,0,5,0,0,0.4,other=moss; sticky trap found 2m from original location; rock on pitfall moved; dead Podarcis in pitfall

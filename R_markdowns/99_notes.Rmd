@@ -11,6 +11,8 @@ knitr::opts_knit$set(root.dir = '..')
 
 ## Questions
 
+DIET BREADTH WOULD BE INTERESTING TO LOOK AT (how many different things each lizard ate)
+
 ###
 
 ## Plan of analytical attack

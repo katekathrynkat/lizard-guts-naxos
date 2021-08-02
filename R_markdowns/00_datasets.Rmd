@@ -1,0 +1,356 @@
+---
+title: "Datasets"
+subtitle: "From [Lizard guts: Naxos](https://github.com/katekathrynkat/lizard-guts-naxos)"
+output:
+  katereR::t_analysis
+---
+
+**Kate Culhane**, Dept. of Ecology, Evolution, and Marine Biology, UC Santa Barbara  
+[kathrynculhane@ucsb.edu](kathrynculhane@ucsb.edu)
+[<i class="fa fa-github"></i>](https://github.com/katekathrynkat/)
+[<i class="fa fa-twitter"></i>](https://twitter.com/katekathrynkat/)
+
+***
+
+```{r setup, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+knitr::opts_knit$set(root.dir='..')
+knitr::opts_chunk$set(echo=TRUE, results='hold', warning=FALSE, message=FALSE,
+                      fig.width=5, fig.height=3, rows.print=5)
+```
+
+<div class = "summary">
+
+**SUMMARY**
+
+Description and wrangling of datasets. Raw data are located in the project directory [`data_raw`](https://github.com/katekathrynkat/PROJECT/tree/master/data_raw/).
+
+</div>
+
+***
+
+**DATA FILE STRUCTURE**
+
+    data_raw
+    ├── field                        # Field/lab measurements
+        ├── original_spreadsheets        # Original data (no cleaning/proofing)
+            ├── [...].xlxs                  # Original Excel files
+            └── data_errata.txt             # Log of corrections made to .csv files
+        ├── diet_field.csv           # Stomach pump invert ID (all islands)
+        ├── naxos_meta.csv           # Site metadata (Naxos)
+        ├── naxos_veg.csv            # Vegetation quadrats (Naxos)
+        ├── prey_meta.csv            # Pitfall/sticky metadata (all islands)
+        ├── prey_pitfall.csv         # Pitfall trap invert ID (all islands)
+        └── prey_sticky.csv          # Sticky trap invert ID (all islands)
+
+<br>
+
+**DEPENDENCIES**
+
+```{r dependencies, class.source='fold-show'}
+
+##### PACKAGES #####
+
+library(tidyverse) # data manipulation & visualization
+library(lubridate) # wrangling dates
+library(kableExtra) # pretty tables
+
+##### DATA #####
+
+# Site info
+meta_raw <- read_csv('data_raw/field/naxos_meta.csv')
+veg_raw <- read_csv('data_raw/field/naxos_veg.csv')
+
+# Invertebrate traps
+prey_meta_raw <- read_csv('data_raw/field/prey_meta.csv',
+                          col_types = "??cccc???????????????") %>% # dates as chr
+  filter(island == "Naxos")
+prey_p_raw <- read_csv('data_raw/field/prey_pitfall.csv') %>% 
+   filter(island == "Naxos")
+prey_s_raw <- read_csv('data_raw/field/prey_sticky.csv') %>% 
+   filter(island == "Naxos")
+
+# Lizard diet
+diet_raw <- read_csv('data_raw/field/diet_field.csv') %>% 
+  filter(island == "Naxos")
+
+```
+
+<br>
+
+**OUTPUT FILES**
+
+- `00_diet_inverts.csv` - Invertebrate counts by order from lizard stomach pumping samples
+- `00_diet_matrix.csv` - Site by species matrix (diet data)
+- `00_diet_veg.csv` - Vegetation counts from lizard stomach pumping samples
+- `00_prey.csv` - Invertebrate counts by order from sticky and pitfall trap samples
+- `00_prey_matrix.csv` - Site by species matrix (invert trap data)
+- `00_prey_metadata.csv` - Metadata for sticky and pitfall trap samples
+- `00_trap_veg` - Vegetation cover by life form from quadrats associated with invert traps
+
+## Sites
+
+- Nine sites
+- "High use" (many stone walls/terraces) or "low use" (no stone walls/terraces)
+- "High veg" (high % vegetation cover) or "low veg" (low % vegetation cover)
+
+```{r}
+
+meta_raw %>% 
+  arrange(use, veg)
+
+```
+
+## Vegetation surveys
+
+- Collected from quadrats
+- Variables:
+  - Vegetation cover by life form (grass, forb, shrub, moss, dead, open, rock, other)
+  - Average vegetation height 
+  - Distance to nearest wall/terrace
+  
+### Trap-level vegetation
+
+```{r}
+
+# Trap metadata
+trap_veg <- prey_meta_raw %>% 
+  select(2, 8, 11:21)
+
+write_csv(trap_veg, "output/00_trap_veg.csv", col_names = TRUE)
+
+trap_veg
+
+```
+
+- One quadrat associated with each invertebrate trap pair (12 per site)
+- No data for MALYKO
+
+### Site-level vegetation
+
+
+```{r}
+
+veg_raw
+
+```
+
+- Randomly placed
+- Eight quadrats per site
+
+## Invertebrate trapping
+
+- 12 trap pairs (1 sticky trap + 1 pitfall trap) per site
+  - Sticky traps = yellow cards
+  - Pitfall traps = cups with antifreeze
+- Traps open 33-35 hours
+- Condition for each trap coded as "GOOD" (effort = 1), "FLAW" (effort = 0.5), or "LOST" (effort = 0) based on comments
+
+### Metadata 
+
+```{r}
+
+# Trap metadata
+prey_meta <- prey_meta_raw %>% 
+  left_join(prey_p_raw[c(2,4,31)], by = c("site", "trap")) %>% 
+  left_join(prey_s_raw[c(2,4,24)], by = c("site", "trap")) %>% 
+  mutate(comments_p = comments.y,
+         comments_s = comments,
+         comments = comments.x,
+         set = dmy_hm(paste(date_set, time_set),
+                      quiet = TRUE), # suppress warnings
+         collected = dmy_hm(paste(date_coll, time_coll),
+                            quiet = TRUE), # suppress warnings
+         hours_open = as.numeric(collected - set)*24,
+         pitfall_effort = case_when(
+           pitfall_condition == "GOOD" ~ 1,
+           pitfall_condition == "FLAW" ~ 0.5,
+           pitfall_condition == "LOST" ~ 0),
+         sticky_effort = case_when(
+           sticky_condition == "GOOD" ~ 1,
+           sticky_condition == "FLAW" ~ 0.5,
+           sticky_condition == "LOST" ~ 0
+         )) %>%
+  select(site, set, collected, hours_open, crew, trap,
+         pitfall_condition, pitfall_effort, sticky_condition, sticky_effort,
+         comments, comments_p, comments_s)
+
+write_csv(prey_meta, "output/00_prey_meta.csv", col_names = TRUE)
+
+prey_meta
+
+```
+
+### ID/count data
+
+```{r}
+
+# Pitfall trap data
+prey_p <- prey_p_raw %>% 
+  mutate(trap_type = "pitfall",
+         sample = paste0(site, "-P", trap)) %>% 
+  select(-gecko, -lizard) %>% # remove columns for non-invertebrates
+  pivot_longer(5:28, names_to = "order", values_to = "count")
+
+# Sticky trap data
+prey_s <- prey_s_raw %>% 
+  mutate(trap_type = "sticky",
+         sample = paste0(site, "-S", trap)) %>% 
+  select(-gecko) %>% # remove columns for non-invertebrates
+  pivot_longer(5:22, names_to = "order", values_to = "count")
+
+# All trap data
+prey <- full_join(prey_p, prey_s) %>% 
+  filter(count != 0) %>% 
+  select(sample, site, trap, trap_type, order, count)
+
+write_csv(prey, "output/00_prey.csv", col_names = TRUE)
+
+prey
+
+```
+
+- Samples were identified to order and counted under a microscope
+
+### Site by species matrix
+
+```{r paged.print=FALSE}
+
+prey_matrix <- prey %>% 
+  pivot_wider(names_from = order, values_from = count) %>% 
+  replace(., is.na(.), 0)
+
+write_csv(prey_matrix, "output/00_prey_matrix.csv", col_names = TRUE)
+
+prey_matrix
+
+```
+
+- For community analyses with `vegan`
+
+## Lizard diet
+
+- Diet samples were collected from live lizards via stomach pumping
+- Samples were identified to order and counted under a microscope
+- Abundance estimates are conservative (e.g. 3 beetle elytra counted as 2 beetles)
+- Total number of lizard stomach samples = `r nrow(diet_raw)`
+
+<br>
+
+**Number of samples per site:**
+
+```{r}
+
+diet <- diet_raw %>%
+  select(where(~ any(. != 0)), -island) # remove columns with 0 observations
+
+diet %>% 
+  count(site) %>% 
+  arrange(-n) %>% 
+  pivot_wider(names_from = site, values_from = n) %>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+</div>
+
+### Inverts
+
+```{r}
+
+diet_inverts <- diet %>% 
+  select(-c("berry":"stick","sand")) %>% 
+  mutate(egg = insect_egg + spider_egg,
+         larvae = coleoptera_larvae + diptera_larvae + 
+           lepidoptera_larvae + neuroptera_larvae) %>% 
+  select(-c("insect_egg":"spider_egg",
+            "coleoptera_larvae":"neuroptera_larvae")) %>% 
+  relocate(comments, .after = last_col()) %>% 
+  pivot_longer("blattodea":"larvae",
+               names_to = "order", values_to = "count") %>% 
+  filter(count != 0) %>% 
+  relocate(comments, .after = last_col())
+
+write_csv(diet_inverts, "output/00_diet_inverts.csv", col_names = TRUE)
+
+diet_inverts
+
+```
+
+- `r length(unique(diet_inverts$lizard_id))` stomach samples containing invertebrates
+
+<br>
+
+**Number of samples containing each order:**
+
+```{r paged.print=FALSE}
+
+count(diet_inverts, order) %>%
+  arrange(-n)%>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+
+### Site by species matrix
+
+```{r paged.print=FALSE}
+
+diet_matrix <- diet_inverts %>% 
+  select(-date, -comments) %>% 
+  mutate(order = factor(order, # order factor by n
+                        levels = arrange(count(diet_inverts, order),-n)$order)) %>% 
+  pivot_wider(names_from = order, values_from = count) %>% 
+  replace(., is.na(.), 0)
+
+write_csv(diet_matrix, "output/00_diet_matrix.csv", col_names = TRUE)
+
+diet_matrix
+
+```
+
+- For community analyses with `vegan`
+
+### Herbivory
+
+```{r}
+
+diet_veg <- diet %>% 
+  select(-c("blattodea":"gastropoda","sand")) %>% 
+  mutate(seed = seed + seed_pod) %>% 
+  select(-seed_pod) %>% 
+  pivot_longer("berry":"stick",
+               names_to = "veg", values_to = "count") %>% 
+  filter(count != 0) %>% 
+  relocate(comments, .after = last_col())
+
+write_csv(diet_veg, "output/00_diet_veg.csv", col_names = TRUE)
+
+diet_veg
+
+```
+
+- `r length(unique(diet_veg$lizard_id))` stomach samples containing vegetation
+
+**Number of samples containing each type of veg:**
+
+```{r paged.print=FALSE}
+
+count(diet_veg, veg) %>%
+  arrange(-n)%>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+
+<br>
+<br>
+<br>
+
+***
+
+<details><summary>**SESSION INFO**</summary>
+```{r session-info}
+devtools::session_info()
+```
+</details>

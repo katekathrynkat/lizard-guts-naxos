@@ -24,6 +24,7 @@ DIET (diet_field.csv)
 NAXOS METADATA (naxos_meta.csv)
 
 - Added "use" and "veg" columns for land use (high/low) and vegetation cover (high/low)
+- Added "name" column for full site name
 
 -------------
 

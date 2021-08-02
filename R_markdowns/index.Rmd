@@ -15,7 +15,7 @@ knitr::opts_knit$set(root.dir = '..')
 
 # Lizard prey selection on Naxos (Greek Cyclades)
 
-##### Community analysis of available prey and diet for a Lacertid lizard (*Podarcis erhardii*) on the island of Naxos in the Greek Cyclades.
+##### Community analysis of available prey and diet for Erhard's wall lizard (Lacertidae: *Podarcis erhardii*) on the island of Naxos in the Greek Cyclades.
 
 **Kate Culhane**, Dept. of Ecology, Evolution, and Marine Biology, UC Santa Barbara  
 [kathrynculhane@ucsb.edu](kathrynculhane@ucsb.edu)
@@ -28,16 +28,15 @@ knitr::opts_knit$set(root.dir = '..')
 
 ### <i class="fa fa-table fa-fw"></i> Data
 
-- [Metadata](https://katekathrynkat.github.io/lizard-guts-naxos/01_metadata.html)
-- [Data wrangling](https://katekathrynkat.github.io/lizard-guts-naxos/02_data_wrangling.html)
+- [Metadata and data wrangling](https://katekathrynkat.github.io/lizard-guts-naxos/00_datasets.html)
 
 ### <i class="fa fa-chart-line fa-fw"></i> Analyses
 
-- [Data exporation](https://katekathrynkat.github.io/lizard-guts-naxos/03_data_exploration.html)
+- [Data exporation](https://katekathrynkat.github.io/lizard-guts-naxos/01_data_exploration.html)
 
 ### <i class="fa fa-sticky-note fa-fw"></i> Notes
 
-- [Notes](https://katekathrynkat.github.io/lizard-guts-naxos/99_notes.html)
+- [General notes](https://katekathrynkat.github.io/lizard-guts-naxos/99_notes.html)
 
 ### <i class="fa fa-users fa-fw"></i> Collaborators
 

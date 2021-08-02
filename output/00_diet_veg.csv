@@ -1,0 +1,22 @@
+site,date,lizard_id,veg,count,comments
+DEMAR,09-Nov-14,DEMAR-518-02,flower_parts,1,NA
+DEMAR,09-Nov-14,DEMAR-518-13,seed,1,NA
+EMONI,16-May-14,EMONI-516-26,stick,2,NA
+MALYKO,07-Oct-14,MALYKO-602-17,leaf,1,NA
+MALYKO,07-Oct-14,MALYKO-602-17,stick,1,NA
+MALYKO,07-Oct-14,MALYKO-602-20,seed,1,NA
+MALYKO,07-Oct-14,MALYKO-602-02,leaf,1,NA
+MALYKO,07-Oct-14,MALYKO-602-10,berry,5,NA
+MALYKO,07-Oct-14,MALYKO-602-10,flower_parts,1,NA
+MALYKO,07-Oct-14,MALYKO-602-12,berry,1,NA
+NALYKO,01-Oct-14,NALYKO-601-02,leaf,1,unidentified thing: grey shell thing with black lines
+SMONI,07-Nov-14,SMONI-522-22,seed,2,NA
+SMONI,07-Nov-14,SMONI-522-34,flower_parts,3,NA
+SMONI,07-Nov-14,SMONI-522-19,flower_parts,1,NA
+SMONI,07-Nov-14,SMONI-522-10,leaf,1,NA
+VIGLA,07-Nov-14,VIGLA-517-08,flower_parts,1,NA
+VIGLA,07-Nov-14,VIGLA-517-21,stick,1,NA
+WMONI,08-Nov-14,WMONI-523-34,stick,1,NA
+WMONI,08-Nov-14,WMONI-523-09,stick,1,NA
+WMONI,08-Nov-14,WMONI-523-11,stick,1,NA
+WMONI,08-Nov-14,WMONI-523-25,flower_parts,1,NA
