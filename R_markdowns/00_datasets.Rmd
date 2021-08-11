@@ -83,6 +83,8 @@ diet_raw <- read_csv('data_raw/field/diet_field.csv') %>%
 - `00_diet_inverts.csv` - Invertebrate counts by order from lizard stomach pumping samples
 - `00_diet_matrix.csv` - Site by species matrix (diet data)
 - `00_diet_veg.csv` - Vegetation counts from lizard stomach pumping samples
+- `00_inverts_all.csv` - Invertebrate counts by order from both trapping and diet samples
+- `00_inverts_matrix.csv` - Site by species matrix (all invert data: trapping + diet)
 - `00_prey.csv` - Invertebrate counts by order from sticky and pitfall trap samples
 - `00_prey_matrix.csv` - Site by species matrix (invert trap data)
 - `00_prey_metadata.csv` - Metadata for sticky and pitfall trap samples
@@ -187,14 +189,14 @@ prey_meta
 
 # Pitfall trap data
 prey_p <- prey_p_raw %>% 
-  mutate(trap_type = "pitfall",
+  mutate(sample_type = "pitfall",
          sample = paste0(site, "-P", trap)) %>% 
   select(-gecko, -lizard) %>% # remove columns for non-invertebrates
   pivot_longer(5:28, names_to = "order", values_to = "count")
 
 # Sticky trap data
 prey_s <- prey_s_raw %>% 
-  mutate(trap_type = "sticky",
+  mutate(sample_type = "sticky",
          sample = paste0(site, "-S", trap)) %>% 
   select(-gecko) %>% # remove columns for non-invertebrates
   pivot_longer(5:22, names_to = "order", values_to = "count")
@@ -202,7 +204,7 @@ prey_s <- prey_s_raw %>%
 # All trap data
 prey <- full_join(prey_p, prey_s) %>% 
   filter(count != 0) %>% 
-  select(sample, site, trap, trap_type, order, count)
+  select(sample, site, trap, sample_type, order, count)
 
 write_csv(prey, "output/00_prey.csv", col_names = TRUE)
 
@@ -252,7 +254,6 @@ diet %>%
   kable_minimal(full_width = FALSE, position = "left")
 
 ```
-</div>
 
 ### Inverts
 
@@ -269,6 +270,9 @@ diet_inverts <- diet %>%
   pivot_longer("blattodea":"larvae",
                names_to = "order", values_to = "count") %>% 
   filter(count != 0) %>% 
+  mutate(sample = paste0(site, "-D", str_sub(lizard_id, 7)),
+         sample_type = "diet") %>%
+  select(sample, site, sample_type, everything()) %>% 
   relocate(comments, .after = last_col())
 
 write_csv(diet_inverts, "output/00_diet_inverts.csv", col_names = TRUE)
@@ -283,7 +287,7 @@ diet_inverts
 
 **Number of samples containing each order:**
 
-```{r paged.print=FALSE}
+```{r}
 
 count(diet_inverts, order) %>%
   arrange(-n)%>%
@@ -334,7 +338,7 @@ diet_veg
 
 **Number of samples containing each type of veg:**
 
-```{r paged.print=FALSE}
+```{r}
 
 count(diet_veg, veg) %>%
   arrange(-n)%>%
@@ -342,6 +346,41 @@ count(diet_veg, veg) %>%
   kable_minimal(full_width = FALSE, position = "left")
 
 ```
+
+## Combined data (trapping + diet)
+
+### Abundance data
+
+```{r}
+
+inverts_all <- full_join(prey, diet_inverts) %>% 
+  select(-trap, -date, -lizard_id, -comments)
+
+write_csv(inverts_all, "output/00_inverts_all.csv", col_names = TRUE)
+
+inverts_all
+
+```
+
+- Combined trapping (sticky + pitfall) and diet data
+
+### Site by species matrix
+
+```{r paged.print=FALSE}
+
+inverts_matrix <- inverts_all %>% 
+  mutate(order = factor(order, # order factor by n
+                        levels = arrange(count(inverts_all, order),-n)$order)) %>% 
+  pivot_wider(names_from = order, values_from = count) %>% 
+  replace(., is.na(.), 0)
+
+write_csv(inverts_matrix, "output/00_inverts_matrix.csv", col_names = TRUE)
+
+inverts_matrix
+
+```
+
+- For community analyses with `vegan`
 
 <br>
 <br>

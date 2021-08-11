@@ -1,4 +1,4 @@
-sample,site,trap,trap_type,diptera,hemiptera,hymenoptera,coleoptera,acari,collembola,araneae,isopoda,pseudoscorpiones,embioptera,gastropoda,lepidoptera,thysanura,chilopoda,coleoptera_larvae,isoptera,orthoptera,lepidoptera_larvae,opilliones,neuroptera,homoptera,psocoptera,raphidioptera
+sample,site,trap,sample_type,diptera,hemiptera,hymenoptera,coleoptera,acari,collembola,araneae,isopoda,pseudoscorpiones,embioptera,gastropoda,lepidoptera,thysanura,chilopoda,coleoptera_larvae,isoptera,orthoptera,lepidoptera_larvae,opilliones,neuroptera,homoptera,psocoptera,raphidioptera
 DEMAR-P1,DEMAR,1,pitfall,1,1,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 DEMAR-P2,DEMAR,2,pitfall,0,1,7,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 DEMAR-P3,DEMAR,3,pitfall,1,0,1,2,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

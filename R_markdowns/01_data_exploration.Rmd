@@ -36,58 +36,68 @@ Exploring the data
 ##### PACKAGES #####
 
 library(tidyverse) # data manipulation & visualization
+library(kableExtra) # pretty tables
 library(vegan) # community analyses
 library(goeveg) # scree plot for NMDS
 
+##### SOURCE CODE #####
+
+source("R_scripts/source_scales.R") # scales to use in ggplots
+source("R_scripts/source_factor_levels.R") # functions to assign factor levels
+
 ##### DATA #####
 
-# Invertebrate counts by order from sticky and pitfall trap samples
-prey <- read_csv("output/00_prey.csv")
+# Abundance data
+prey <- read_csv("output/00_prey.csv") %>% # sticky + pitfall samples
+  fl_sample()
+diet <- read_csv("output/00_diet_inverts.csv") %>% # diet samples
+  fl_sample()
+inverts <- read_csv("output/00_inverts_all.csv") %>% # ALL invert samples
+  fl_sample()
 
-# Invertebrate counts by order from lizard stomach pumping samples
-diet <- read_csv("output/00_diet_inverts.csv")
-
-# Site by species matrix (invert prey data)
-prey_matrix <- read_csv("output/00_prey_matrix.csv")
-
-# Site by species matrix (diet data)
-diet_matrix <- read_csv("output/00_diet_matrix.csv")
+# Site by species matrices
+prey_matrix <- read_csv("output/00_prey_matrix.csv") # sticky + pitfall samples
+diet_matrix <- read_csv("output/00_diet_matrix.csv") # diet samples
+inverts_matrix <- read_csv("output/00_inverts_matrix.csv") # ALL invert samples
 
 ```
 
-## Basics
+## Abundance
 
-## Abundance by order
-
-### Available prey community
-
-**Number of invert individuals trapped per order **
+**Number of invert individuals per order**
 
 ```{r}
 
-# Summary table
-prey %>% 
-  group_by(order, trap_type) %>% 
+inverts %>% 
+  group_by(order, sample_type) %>% 
   summarise(n = sum(count)) %>% 
-  pivot_wider(names_from = trap_type, values_from = n) %>% 
-  mutate(total = pitfall + sticky) %>% 
-  arrange(-total)
+  pivot_wider(names_from = sample_type, values_from = n) %>% 
+  replace(., is.na(.), 0) %>% 
+  mutate(trap_total = pitfall + sticky,
+         diet = cell_spec(diet,
+                          bold = ifelse(diet > 10, "TRUE", "FALSE"),
+                          color = ifelse(diet > 10, "red", "black"))) %>% 
+  arrange(-trap_total) %>% 
+  relocate(diet, .after = last_col()) %>% 
+  kbl(escape = FALSE) %>% 
+  kable_minimal(full_width = FALSE, position = "left")
+
 
 ```
 
-- Summed across trapping samples
+- Number of invert individuals summed across samples
+- Orders with >10 individuals in diet samples highlighted in red
 
-<br>
-
-**Number of invert individuals trapped per order**
+### Trapping samples
 
 ```{r fig.width=8, fig.height=8}
 
 # Abundance by order
 prey %>% 
-  ggplot(aes(x = trap_type, y = count)) +
-  geom_jitter(aes(color = trap_type),
+  ggplot(aes(x = sample_type, y = count)) +
+  geom_jitter(aes(color = sample_type),
               width = 0.1, size = 1.5) +
+  scale_color_manual(values = scol_trap) +
   geom_boxplot(fill = NA, outlier.shape = NA) +
   facet_wrap(~ fct_reorder(order, count, .fun = sum, .desc = TRUE),
              scales = "free_y") +
@@ -97,25 +107,10 @@ prey %>%
 
 ```
 
+- Number of invert individuals trapped per order
 - Each point represents a trap (12 trap pairs/site, 9 sites)
 
-### Diet
-
-**Number of invert individuals consumed per order**
-
-```{r}
-
-# Summary table
-diet %>% 
-  group_by(order) %>% 
-  summarise(n = sum(count)) %>% 
-  arrange(-n)
-
-```
-
-- Summed across lizard diet samples
-
-<br>
+### Diet samples
 
 ```{r fig.width=8, fig.height=5}
 
@@ -140,6 +135,7 @@ diet %>%
 
 ```
 
+- Number of invert individuals consumed per order
 - Each point represents a stomach sample from a single lizard (148 lizards)
 - Four outliers not plotted for hemiptera: 48, 22, 22, 17
 
@@ -147,52 +143,96 @@ diet %>%
 
 ### Invert trap data 
 
-```{r cache=TRUE, results='hide'}
+```{r cache=TRUE, results='hide', eval=FALSE}
 
 # Wrangle matrix
 m_p <- as.matrix(prey_matrix[-c(1:4)])
 rownames(m_p) <- prey_matrix$sample
 m_p_hell <- decostand(m_p, 'hellinger') # Hellinger transformation
-m_p_meta <- select(prey_matrix, sample, site, trap, trap_type) # metadata
+m_p_meta <- select(prey_matrix, sample, site, trap, sample_type) %>% # metadata
+  fl_sample()
 
 # Scree plot to check stress per number of dimensions
 dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
 
 ```
 
-```{r cache=TRUE, results='hide', class.source='fold-show'}
+```{r cache=TRUE, results='hide', class.source='fold-show', eval=FALSE}
 
 # Create NMDS ordination
-ord <- metaMDS(m_p_hell,
-               distance = 'bray', # use Bray-Curtis distances
-               autotransform = FALSE, # already manually transformed the matrix
-               k = 3, # number of dimensions
-               trymax = 1000)
+ord_p <- metaMDS(m_p_hell,
+                 distance = 'bray', # use Bray-Curtis distances
+                 autotransform = FALSE, # already manually transformed the matrix
+                 k = 3, # number of dimensions
+                 trymax = 1000)
 
 # Stress plot
-stressplot(ord)
+stressplot(ord_p)
 
 ```
 
-```{r fig.width=8, fig.height=6}
+```{r fig.width=8, fig.height=6, eval=FALSE}
 
 # Plot ordination
-scale_trap <- c("red", "orange")
-names(scale_trap) <- c("pitfall", "sticky")
 par(mar = c(4,4,1,1))
-plot(ord, display = 'species', type = 'n')
-points(ord, display = 'sites', pch = 19, col = scale_trap[m_p_meta$trap_type])
-ordiellipse(ord, groups = m_p_meta$trap_type,
+plot(ord_p, display = 'species', type = 'n')
+points(ord_p, display = 'sites', pch = 19,
+       col = scale_trap[m_p_meta$sample_type])
+ordiellipse(ord_p, groups = m_p_meta$sample_type,
             label = TRUE, col = scale_trap, lwd = 2)
-text(ord, display = 'species')
+text(ord_p, display = 'species')
 
 ```
 
 - Each dot is a trap
-- Number of dimensions = `r ord$ndim`
-- Stress = `r round(ord$stress,3)`
+- Number of dimensions = `ord_p$ndim`
+- Stress = `round(ord_p$stress,3)`
 
-## Notes & resources
+### Diet + trapping data
+
+```{r cache=TRUE, results='hide', eval=FALSE}
+
+# Wrangle matrix
+m_i <- as.matrix(inverts_matrix[-c(1:3)])
+rownames(m_i) <- inverts_matrix$sample
+m_i_hell <- decostand(m_i, 'hellinger') # Hellinger transformation
+m_i_meta <- select(inverts_matrix, sample, site, sample_type) # metadata
+
+# Scree plot to check stress per number of dimensions
+dimcheckMDS(m_i_hell, distance = "bray", autotransform = FALSE, k = 10)
+
+```
+
+```{r cache=TRUE, results='hide', class.source='fold-show', eval=FALSE}
+
+# Create NMDS ordination
+ord_i <- metaMDS(m_i_hell,
+                 distance = 'bray', # use Bray-Curtis distances
+                 autotransform = FALSE, # already manually transformed the matrix
+                 k = 2, # number of dimensions
+                 trymax = 1000)
+
+# Stress plot
+stressplot(ord_i)
+
+```
+
+```{r fig.width=8, fig.height=6, eval=FALSE}
+
+# Plot ordination
+par(mar = c(4,4,1,1))
+plot(ord_i, display = 'species', type = 'n', xlim = c(-0.15, 0.15))
+points(ord_i, display = 'sites', pch = 19,
+       col = scol_sample[m_i_meta$sample_type])
+ordiellipse(ord_i, groups = m_i_meta$sample_type,
+            label = TRUE, col = "black", lwd = 2)
+text(ord_i, display = 'species')
+
+```
+
+- Each dot is a trap
+- Number of dimensions = `ord_f$ndim`
+- Stress = `round(ord_f$stress,3)`
 
 <br>
 <br>

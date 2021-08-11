@@ -1,4 +1,4 @@
-sample,site,trap,trap_type,order,count
+sample,site,trap,sample_type,order,count
 DEMAR-P1,DEMAR,1,pitfall,diptera,1
 DEMAR-P1,DEMAR,1,pitfall,hemiptera,1
 DEMAR-P1,DEMAR,1,pitfall,hymenoptera,8
