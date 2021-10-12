@@ -58,20 +58,20 @@ library(kableExtra) # pretty tables
 ##### DATA #####
 
 # Site info
-meta_raw <- read_csv('data_raw/field/naxos_meta.csv')
-veg_raw <- read_csv('data_raw/field/naxos_veg.csv')
+meta_raw <- read_csv("data_raw/field/naxos_meta.csv")
+veg_raw <- read_csv("data_raw/field/naxos_veg.csv")
 
 # Invertebrate traps
-prey_meta_raw <- read_csv('data_raw/field/prey_meta.csv',
+prey_meta_raw <- read_csv("data_raw/field/prey_meta.csv",
                           col_types = "??cccc???????????????") %>% # dates as chr
   filter(island == "Naxos")
-prey_p_raw <- read_csv('data_raw/field/prey_pitfall.csv') %>% 
+prey_p_raw <- read_csv("data_raw/field/prey_pitfall.csv") %>% 
    filter(island == "Naxos")
-prey_s_raw <- read_csv('data_raw/field/prey_sticky.csv') %>% 
+prey_s_raw <- read_csv("data_raw/field/prey_sticky.csv") %>% 
    filter(island == "Naxos")
 
 # Lizard diet
-diet_raw <- read_csv('data_raw/field/diet_field.csv') %>% 
+diet_raw <- read_csv("data_raw/field/diet_field.csv") %>% 
   filter(island == "Naxos")
 
 ```
@@ -130,7 +130,6 @@ trap_veg
 
 ### Site-level vegetation
 
-
 ```{r}
 
 veg_raw
@@ -139,6 +138,142 @@ veg_raw
 
 - Randomly placed
 - Eight quadrats per site
+
+## Lizard diet
+
+- Diet samples were collected from live lizards via stomach pumping
+- Samples were identified to order and counted under a microscope
+- Abundance estimates are conservative (e.g. 3 beetle elytra counted as 2 beetles)
+- Total number of lizard stomach samples = `r nrow(diet_raw)`
+
+<br>
+
+<i class="fa fa-clipboard-list"></i> **Number of samples per site**
+
+```{r}
+
+diet <- diet_raw %>%
+  select(where(~ any(. != 0)), -island) # remove columns with 0 observations
+
+diet %>% 
+  count(site) %>% 
+  arrange(-n) %>% 
+  pivot_wider(names_from = site, values_from = n) %>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+
+### Inverts
+
+```{r}
+
+diet_inverts <- diet %>% 
+  select(-c("berry":"stick","sand")) %>% 
+  mutate(egg = insect_egg + spider_egg,
+         larvae = coleoptera_larvae + diptera_larvae + 
+           lepidoptera_larvae + neuroptera_larvae) %>% 
+  select(-c("insect_egg":"spider_egg",
+            "coleoptera_larvae":"neuroptera_larvae")) %>% 
+  relocate(comments, .after = last_col()) %>% 
+  pivot_longer("blattodea":"larvae",
+               names_to = "order", values_to = "count") %>% 
+  filter(count != 0) %>% 
+  mutate(sample = paste0("DI-", site, "-",
+                         str_split_fixed(lizard_id, "-", 3)[,2], "_",
+                         str_split_fixed(lizard_id, "-", 3)[,3]),
+         sample_type = "diet") %>%
+  select(sample, site, sample_type, everything()) %>% 
+  relocate(comments, .after = last_col())
+
+```
+
+- `r length(unique(diet_inverts$lizard_id))` stomach samples containing invertebrates
+
+<br>
+
+<i class="fa fa-clipboard-list"></i> **Number of samples containing each order:**
+
+```{r}
+
+count(diet_inverts, order) %>%
+  arrange(-n)%>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+
+- Removed taxa present in <5 samples from future analyses
+- The pseudoscorpions really fucked with nmds plots
+
+```{r}
+
+diet_inverts_2 <- diet_inverts %>% 
+  group_by(order) %>% 
+  mutate(n = length(sample)) %>% 
+  filter(n>=10) %>% 
+  select(-n)
+
+write_csv(diet_inverts_2, "output/00_diet_inverts.csv", col_names = TRUE)
+
+```
+
+### Site by species matrix
+
+```{r paged.print=FALSE}
+
+diet_matrix <- diet_inverts_2 %>% 
+  select(-date, -comments) %>% 
+  mutate(order = factor(order, # order factor by n
+                        levels = arrange(count(diet_inverts, order),-n)$order)) %>% 
+  pivot_wider(names_from = order, values_from = count) %>% 
+  replace(., is.na(.), 0)
+
+write_csv(diet_matrix, "output/00_diet_matrix.csv", col_names = TRUE)
+
+diet_matrix
+
+```
+
+- For community analyses with `vegan`
+
+### Herbivory
+
+```{r}
+
+diet_veg <- diet %>% 
+  select(-c("blattodea":"gastropoda", "sand")) %>% 
+  mutate(seed = seed + seed_pod,
+         sample = paste0("DV-", site, "-",
+                         str_split_fixed(lizard_id, "-", 3)[,2], "_",
+                         str_split_fixed(lizard_id, "-", 3)[,3]),
+         sample_type = "diet_veg") %>% 
+  select(-seed_pod, -comments) %>% 
+  pivot_longer("berry":"stick",
+               names_to = "veg", values_to = "count") %>% 
+  filter(count != 0) %>% 
+  select(sample, site, sample_type, everything())
+
+write_csv(diet_veg, "output/00_diet_veg.csv", col_names = TRUE)
+
+diet_veg
+
+```
+
+- `r length(unique(diet_veg$lizard_id))` stomach samples containing vegetation
+
+<br>
+
+<i class="fa fa-clipboard-list"></i> **Number of samples containing each type of veg:**
+
+```{r}
+
+count(diet_veg, veg) %>%
+  arrange(-n)%>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
 
 ## Invertebrate trapping
 
@@ -185,19 +320,21 @@ prey_meta
 
 ### ID/count data
 
+- Samples were identified to order and counted under a microscope
+
 ```{r}
 
 # Pitfall trap data
 prey_p <- prey_p_raw %>% 
   mutate(sample_type = "pitfall",
-         sample = paste0(site, "-P", trap)) %>% 
+         sample = paste0("TP-", site, "-", trap)) %>% 
   select(-gecko, -lizard) %>% # remove columns for non-invertebrates
-  pivot_longer(5:28, names_to = "order", values_to = "count")
+  pivot_longer(5:28, names_to = "order", values_to = "count") 
 
 # Sticky trap data
 prey_s <- prey_s_raw %>% 
   mutate(sample_type = "sticky",
-         sample = paste0(site, "-S", trap)) %>% 
+         sample = paste0("TS-", site, "-", trap)) %>% 
   select(-gecko) %>% # remove columns for non-invertebrates
   pivot_longer(5:22, names_to = "order", values_to = "count")
 
@@ -206,19 +343,39 @@ prey <- full_join(prey_p, prey_s) %>%
   filter(count != 0) %>% 
   select(sample, site, trap, sample_type, order, count)
 
-write_csv(prey, "output/00_prey.csv", col_names = TRUE)
-
 prey
 
 ```
 
-- Samples were identified to order and counted under a microscope
+<br>
+
+<i class="fa fa-clipboard-list"></i> **Number of samples containing each order:**
+
+```{r}
+
+count(prey, order) %>%
+  arrange(-n)%>%
+  kbl() %>%
+  kable_minimal(full_width = FALSE, position = "left")
+
+```
+
+- Several orders not represented in the diet samples and so removed from further analyses
+
+```{r}
+
+prey_2 <- prey %>% 
+  filter(order %in% unique(diet_inverts_2$order))
+
+write_csv(prey_2, "output/00_prey.csv", col_names = TRUE)
+
+```
 
 ### Site by species matrix
 
 ```{r paged.print=FALSE}
 
-prey_matrix <- prey %>% 
+prey_matrix <- prey_2 %>% 
   pivot_wider(names_from = order, values_from = count) %>% 
   replace(., is.na(.), 0)
 
@@ -230,130 +387,14 @@ prey_matrix
 
 - For community analyses with `vegan`
 
-## Lizard diet
 
-- Diet samples were collected from live lizards via stomach pumping
-- Samples were identified to order and counted under a microscope
-- Abundance estimates are conservative (e.g. 3 beetle elytra counted as 2 beetles)
-- Total number of lizard stomach samples = `r nrow(diet_raw)`
-
-<br>
-
-**Number of samples per site:**
-
-```{r}
-
-diet <- diet_raw %>%
-  select(where(~ any(. != 0)), -island) # remove columns with 0 observations
-
-diet %>% 
-  count(site) %>% 
-  arrange(-n) %>% 
-  pivot_wider(names_from = site, values_from = n) %>%
-  kbl() %>%
-  kable_minimal(full_width = FALSE, position = "left")
-
-```
-
-### Inverts
-
-```{r}
-
-diet_inverts <- diet %>% 
-  select(-c("berry":"stick","sand")) %>% 
-  mutate(egg = insect_egg + spider_egg,
-         larvae = coleoptera_larvae + diptera_larvae + 
-           lepidoptera_larvae + neuroptera_larvae) %>% 
-  select(-c("insect_egg":"spider_egg",
-            "coleoptera_larvae":"neuroptera_larvae")) %>% 
-  relocate(comments, .after = last_col()) %>% 
-  pivot_longer("blattodea":"larvae",
-               names_to = "order", values_to = "count") %>% 
-  filter(count != 0) %>% 
-  mutate(sample = paste0(site, "-D", str_sub(lizard_id, 7)),
-         sample_type = "diet") %>%
-  select(sample, site, sample_type, everything()) %>% 
-  relocate(comments, .after = last_col())
-
-write_csv(diet_inverts, "output/00_diet_inverts.csv", col_names = TRUE)
-
-diet_inverts
-
-```
-
-- `r length(unique(diet_inverts$lizard_id))` stomach samples containing invertebrates
-
-<br>
-
-**Number of samples containing each order:**
-
-```{r}
-
-count(diet_inverts, order) %>%
-  arrange(-n)%>%
-  kbl() %>%
-  kable_minimal(full_width = FALSE, position = "left")
-
-```
-
-### Site by species matrix
-
-```{r paged.print=FALSE}
-
-diet_matrix <- diet_inverts %>% 
-  select(-date, -comments) %>% 
-  mutate(order = factor(order, # order factor by n
-                        levels = arrange(count(diet_inverts, order),-n)$order)) %>% 
-  pivot_wider(names_from = order, values_from = count) %>% 
-  replace(., is.na(.), 0)
-
-write_csv(diet_matrix, "output/00_diet_matrix.csv", col_names = TRUE)
-
-diet_matrix
-
-```
-
-- For community analyses with `vegan`
-
-### Herbivory
-
-```{r}
-
-diet_veg <- diet %>% 
-  select(-c("blattodea":"gastropoda","sand")) %>% 
-  mutate(seed = seed + seed_pod) %>% 
-  select(-seed_pod) %>% 
-  pivot_longer("berry":"stick",
-               names_to = "veg", values_to = "count") %>% 
-  filter(count != 0) %>% 
-  relocate(comments, .after = last_col())
-
-write_csv(diet_veg, "output/00_diet_veg.csv", col_names = TRUE)
-
-diet_veg
-
-```
-
-- `r length(unique(diet_veg$lizard_id))` stomach samples containing vegetation
-
-**Number of samples containing each type of veg:**
-
-```{r}
-
-count(diet_veg, veg) %>%
-  arrange(-n)%>%
-  kbl() %>%
-  kable_minimal(full_width = FALSE, position = "left")
-
-```
-
-## Combined data (trapping + diet)
+## Combined dataset (trapping + diet)
 
 ### Abundance data
 
 ```{r}
 
-inverts_all <- full_join(prey, diet_inverts) %>% 
+inverts_all <- full_join(prey_2, diet_inverts_2) %>% 
   select(-trap, -date, -lizard_id, -comments)
 
 write_csv(inverts_all, "output/00_inverts_all.csv", col_names = TRUE)

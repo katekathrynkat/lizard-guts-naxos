@@ -42,15 +42,19 @@ library(goeveg) # scree plot for NMDS
 
 ##### SOURCE CODE #####
 
-source("R_scripts/source_scales.R") # scales to use in ggplots
-source("R_scripts/source_factor_levels.R") # functions to assign factor levels
+source("R_scripts/aes_scales.R") # scales to use in ggplots
+source("R_scripts/factor_levels.R") # functions to assign factor levels
 
 ##### DATA #####
+
+# Habitat
 
 # Abundance data
 prey <- read_csv("output/00_prey.csv") %>% # sticky + pitfall samples
   fl_sample()
-diet <- read_csv("output/00_diet_inverts.csv") %>% # diet samples
+diet <- read_csv("output/00_diet_inverts.csv") %>% # diet samples (inverts)
+  fl_sample()
+diet_veg <- read_csv("output/00_diet_veg.csv") %>% # diet samples (veg)
   fl_sample()
 inverts <- read_csv("output/00_inverts_all.csv") %>% # ALL invert samples
   fl_sample()
@@ -64,25 +68,26 @@ inverts_matrix <- read_csv("output/00_inverts_matrix.csv") # ALL invert samples
 
 ## Abundance
 
+<br>
+
 **Number of invert individuals per order**
 
 ```{r}
 
-inverts %>% 
+inverts_kbl <- inverts %>% 
   group_by(order, sample_type) %>% 
   summarise(n = sum(count)) %>% 
   pivot_wider(names_from = sample_type, values_from = n) %>% 
   replace(., is.na(.), 0) %>% 
-  mutate(trap_total = pitfall + sticky,
-         diet = cell_spec(diet,
-                          bold = ifelse(diet > 10, "TRUE", "FALSE"),
-                          color = ifelse(diet > 10, "red", "black"))) %>% 
-  arrange(-trap_total) %>% 
+  mutate(trap_total = pitfall + sticky) %>% 
   relocate(diet, .after = last_col()) %>% 
-  kbl(escape = FALSE) %>% 
-  kable_minimal(full_width = FALSE, position = "left")
+  arrange(-trap_total)
 
-
+kbl(inverts_kbl) %>% 
+  kable_minimal(full_width = FALSE, position = "left") %>% 
+  column_spec(1, bold = ifelse(inverts_kbl$diet > 10, "TRUE", "FALSE")) %>% 
+  column_spec(5, bold = ifelse(inverts_kbl$diet > 10, "TRUE", "FALSE"),
+                 color = ifelse(inverts_kbl$diet > 10, "red", "black"))
 ```
 
 - Number of invert individuals summed across samples
@@ -139,25 +144,37 @@ diet %>%
 - Each point represents a stomach sample from a single lizard (148 lizards)
 - Four outliers not plotted for hemiptera: 48, 22, 22, 17
 
+## Dietary breadth
+
+```{r}
+
+diet_all <- full_join(diet, diet_veg, by = c("sample", "site", "sample_type",
+                                             "date", "lizard_id",
+                                             "order" = "veg", "count"))
+
+```
+
 ## NMDS
 
-### Invert trap data 
+### Prey (pitfall + sticky trap) data 
 
-```{r cache=TRUE, results='hide', eval=FALSE}
+```{r cache=TRUE, results='hide'}
 
 # Wrangle matrix
 m_p <- as.matrix(prey_matrix[-c(1:4)])
 rownames(m_p) <- prey_matrix$sample
 m_p_hell <- decostand(m_p, 'hellinger') # Hellinger transformation
 m_p_meta <- select(prey_matrix, sample, site, trap, sample_type) %>% # metadata
-  fl_sample()
+  fl_sample() %>% 
+  addcol_useveg()
 
 # Scree plot to check stress per number of dimensions
-dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
+# dimcheckMDS(m_p_hell, distance = "bray", autotransform = FALSE, k = 10)
+# Inflection point at k = 3
 
 ```
 
-```{r cache=TRUE, results='hide', class.source='fold-show', eval=FALSE}
+```{r cache=TRUE, results='hide', class.source='fold-show'}
 
 # Create NMDS ordination
 ord_p <- metaMDS(m_p_hell,
@@ -171,15 +188,17 @@ stressplot(ord_p)
 
 ```
 
-```{r fig.width=8, fig.height=6, eval=FALSE}
+#### By trap type
+
+```{r fig.width=8, fig.height=6}
 
 # Plot ordination
 par(mar = c(4,4,1,1))
-plot(ord_p, display = 'species', type = 'n')
+plot(ord_p, display = 'sites', type = 'n')
 points(ord_p, display = 'sites', pch = 19,
-       col = scale_trap[m_p_meta$sample_type])
+       col = scol_trap[m_p_meta$sample_type])
 ordiellipse(ord_p, groups = m_p_meta$sample_type,
-            label = TRUE, col = scale_trap, lwd = 2)
+            label = TRUE, col = scol_trap, lwd = 2)
 text(ord_p, display = 'species')
 
 ```
@@ -188,9 +207,104 @@ text(ord_p, display = 'species')
 - Number of dimensions = `ord_p$ndim`
 - Stress = `round(ord_p$stress,3)`
 
+#### By veg
+
+```{r fig.width=8, fig.height=6}
+
+# Plot ordination
+par(mar = c(4,4,1,1))
+plot(ord_p, display = 'species', type = 'n')
+points(ord_p, display = 'sites', pch = 19,
+       col = scol_veg[m_p_meta$veg])
+ordiellipse(ord_p, groups = m_p_meta$veg,
+            label = TRUE, col = scol_veg, lwd = 2)
+text(ord_p, display = 'species')
+
+```
+
+#### By land use
+
+```{r fig.width=8, fig.height=6}
+
+# Plot ordination
+par(mar = c(4,4,1,1))
+plot(ord_p, display = 'species', type = 'n')
+points(ord_p, display = 'sites', pch = 19,
+       col = scol_use[m_p_meta$use])
+ordiellipse(ord_p, groups = m_p_meta$use,
+            label = TRUE, col = scol_use, lwd = 2)
+text(ord_p, display = 'species')
+
+```
+
+### Lizard diet (stomach pumping) data
+
+```{r cache=TRUE, results='hide'}
+
+# Wrangle matrix
+m_d <- as.matrix(diet_matrix[-c(1:4)])
+rownames(m_d) <- diet_matrix$sample
+m_d_hell <- decostand(m_d, 'hellinger') # Hellinger transformation
+m_d_meta <- select(diet_matrix, sample, site, lizard_id) %>% # metadata
+  addcol_useveg()
+
+# Scree plot to check stress per number of dimensions
+# dimcheckMDS(m_d_hell, distance = "bray", autotransform = FALSE, k = 10)
+
+```
+
+```{r cache=TRUE, results='hide', class.source='fold-show'}
+
+# Create NMDS ordination
+ord_d <- metaMDS(m_d_hell,
+                 distance = 'bray', # use Bray-Curtis distances
+                 autotransform = FALSE, # already manually transformed the matrix
+                 k = 2, # number of dimensions
+                 trymax = 1000)
+
+# Stress plot
+stressplot(ord_d)
+
+```
+
+#### By veg
+
+```{r fig.width=8, fig.height=6}
+
+# Plot ordination
+par(mar = c(4,4,1,1))
+plot(ord_d, display = 'sites', type = 'n')
+points(ord_d, display = 'sites', pch = 19,
+       col = scol_veg[m_d_meta$veg])
+ordiellipse(ord_d, groups = m_d_meta$veg,
+            label = TRUE, col = scol_veg, lwd = 2)
+text(ord_d, display = 'species')
+
+```
+
+#### By land use
+
+```{r fig.width=8, fig.height=6}
+
+# Plot ordination
+par(mar = c(4,4,1,1))
+plot(ord_d, display = 'species', type = 'n')
+points(ord_d, display = 'sites', pch = 19,
+       col = scol_use[m_d_meta$use])
+ordiellipse(ord_d, groups = m_d_meta$use,
+            label = TRUE, col = scol_use, lwd = 2)
+text(ord_d, display = 'species')
+
+```
+
+- Each dot is a trap
+- Number of dimensions = `ord_d$ndim`
+- Stress = `round(ord_d$stress,3)`
+
+
 ### Diet + trapping data
 
-```{r cache=TRUE, results='hide', eval=FALSE}
+```{r cache=TRUE, results='hide'}
 
 # Wrangle matrix
 m_i <- as.matrix(inverts_matrix[-c(1:3)])
@@ -203,7 +317,7 @@ dimcheckMDS(m_i_hell, distance = "bray", autotransform = FALSE, k = 10)
 
 ```
 
-```{r cache=TRUE, results='hide', class.source='fold-show', eval=FALSE}
+```{r cache=TRUE, results='hide', class.source='fold-show'}
 
 # Create NMDS ordination
 ord_i <- metaMDS(m_i_hell,
@@ -217,22 +331,24 @@ stressplot(ord_i)
 
 ```
 
-```{r fig.width=8, fig.height=6, eval=FALSE}
+```{r fig.width=8, fig.height=6}
 
 # Plot ordination
 par(mar = c(4,4,1,1))
 plot(ord_i, display = 'species', type = 'n', xlim = c(-0.15, 0.15))
+
 points(ord_i, display = 'sites', pch = 19,
        col = scol_sample[m_i_meta$sample_type])
 ordiellipse(ord_i, groups = m_i_meta$sample_type,
-            label = TRUE, col = "black", lwd = 2)
+            label = TRUE, col = scol_sample, lwd = 2)
 text(ord_i, display = 'species')
 
 ```
 
 - Each dot is a trap
-- Number of dimensions = `ord_f$ndim`
-- Stress = `round(ord_f$stress,3)`
+- Number of dimensions = `ord_i$ndim`
+- Stress = `round(ord_i$stress,3)`
+
 
 <br>
 <br>

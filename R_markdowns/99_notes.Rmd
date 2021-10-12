@@ -11,9 +11,17 @@ knitr::opts_knit$set(root.dir = '..')
 
 ## Questions
 
-DIET BREADTH WOULD BE INTERESTING TO LOOK AT (how many different things each lizard ate)
+Q1: How does vegetation type/cover affect the locomotion of active invertebrates?
 
-###
+H1: 
+
+
+Using trap type (sticky vs. pitfall) as a proxy for locomotion (ground vs air)
+
+
+## Notes
+
+- Insect larvae, gastropods, and grasshoppers were important diet components but rarely caught in sticky/pitfall traps
 
 ## Plan of analytical attack
 
@@ -95,3 +103,10 @@ DIET BREADTH WOULD BE INTERESTING TO LOOK AT (how many different things each liz
 
 - Separate ants using comments
 - Flag rare OTUs
+- Rarefaction
+
+habitat: dungeon
+veg: pagelines
+inverts: bug
+movement: wind
+diet: utensils
